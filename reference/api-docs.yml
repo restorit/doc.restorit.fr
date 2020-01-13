@@ -1,0 +1,1881 @@
+openapi: 3.0.0
+info:
+  title: Restor'It
+  description: The documentation of the Restor'It API
+  contact:
+    email: florian.dorre@epitech.eu
+  version: '1'
+servers:
+- url: https://api.restorit.fr/
+  description: Restor'it API
+- url: http://localhost:8000/
+  description: Local Restor'it API
+tags:
+  - Oui
+paths:
+  "/articles":
+    get:
+      tags:
+      - Articles
+      summary: Get all articles
+      description: Get all articles order by created_at
+      operationId: App\Http\Controllers\ArticlesController::getArticles
+      parameters:
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchArticlesRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticlesCollectionResource"
+    post:
+      tags:
+      - Articles
+      summary: Create Article
+      description: Create Article
+      operationId: App\Http\Controllers\ArticlesController::postArticle
+      requestBody:
+        description: Data required to post an article
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateArticle"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticleResource"
+        '401':
+          description: Not Authenticated
+        '422':
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  "/articles/{articleId}":
+    get:
+      tags:
+      - Articles
+      summary: Get article informations
+      description: Get article informations
+      operationId: App\Http\Controllers\ArticlesController::getArticle
+      parameters:
+      - name: articleId
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticleResource"
+        '404':
+          description: Article not found
+    put:
+      tags:
+      - Articles
+      summary: Update Article
+      description: Update Article
+      operationId: App\Http\Controllers\ArticlesController::updateArticle
+      parameters:
+      - name: articleId
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Data required to update an article
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateArticle"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticleResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '422':
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Articles
+      summary: Delete Article
+      description: Delete Article
+      operationId: App\Http\Controllers\ArticlesController::deleteArticle
+      parameters:
+      - name: articleId
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticleResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Article not found
+      security:
+      - bearerAuth: []
+  "/articles/{articleId}/paypal":
+    post:
+      tags:
+      - Payment
+      summary: Create an order
+      description: Create a new paypal order for this article in order to pay it
+      operationId: App\Http\Controllers\ArticlesController::createPaypalOrder
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticleResource"
+        '401':
+          description: Not Authenticated
+        '404':
+          description: Article not found
+      security:
+      - bearerAuth: []
+  "/users/{userId}/articles":
+    get:
+      tags:
+      - Articles
+      summary: Get user articles
+      description: Retrieve user's articles
+      operationId: App\Http\Controllers\ArticlesController::getUserArticles
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchArticlesRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticlesCollectionResource"
+        '404':
+          description: User not found
+  "/users/{userId}/sales":
+    get:
+      tags:
+      - Users
+      summary: Get user sales
+      description: Retrieve user's sales
+      operationId: App\Http\Controllers\ArticlesController::getUserSales
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchUserSalesRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticlesCollectionResource"
+        '402':
+          description: Not allowed
+        '404':
+          description: User not found
+      security:
+      - bearerAuth: []
+  "/users/{userId}/purchases":
+    get:
+      tags:
+      - Users
+      summary: Get user purchases
+      description: Retrieve user's purchases
+      operationId: App\Http\Controllers\ArticlesController::getUserPurchases
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchUserPurchasesRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArticlesCollectionResource"
+        '403':
+          description: Not allowed
+        '404':
+          description: User not found
+      security:
+      - bearerAuth: []
+  "/auth/login":
+    post:
+      tags:
+      - Authentication
+      summary: Login
+      description: Get access token for existing user
+      operationId: App\Http\Controllers\AuthController::login
+      requestBody:
+        description: Data required to login
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Login"
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Invalid credentials
+        '422':
+          description: Unprocessable Entity
+  "/auth/logout":
+    get:
+      tags:
+      - Authentication
+      summary: Logout user
+      description: Revoke user's token validity
+      operationId: App\Http\Controllers\AuthController::logout
+      responses:
+        '200':
+          description: Successfully logged out
+        '404':
+          description: User not found
+      security:
+      - bearerAuth: []
+  "/articles/{articleId}/evaluations":
+    get:
+      tags:
+      - Evaluations
+      summary: Get article evaluations
+      description: Get article evaluations
+      operationId: App\Http\Controllers\EvaluationsController::getArticleEvaluations
+      parameters:
+      - name: articleId
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchArticleEvaluationsRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationsCollectionResource"
+        '404':
+          description: Article not found
+  "/articles/{articleId}/evaluations/{evaluationId}":
+    get:
+      tags:
+      - Evaluations
+      summary: Get article evaluation
+      description: Retrieve article evaluation by id
+      operationId: App\Http\Controllers\EvaluationsController::getEvaluation
+      parameters:
+      - name: articleId
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+      - name: evaluationId
+        in: path
+        description: Evaluation Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationResource"
+        '404':
+          description: Article/Evaluation not found
+  "/evaluations":
+    post:
+      tags:
+      - Evaluations
+      summary: Create Article Evaluation
+      description: Create evaluation for specific article
+      operationId: App\Http\Controllers\EvaluationsController::postEvaluation
+      requestBody:
+        description: Data required to post an evaluation
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateEvaluation"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '422':
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  "/evaluations/{evaluationId}":
+    put:
+      tags:
+      - Evaluations
+      summary: Update Evaluation
+      description: Update evaluation by evaluation Id
+      operationId: App\Http\Controllers\EvaluationsController::updateEvaluation
+      parameters:
+      - name: evaluationId
+        in: path
+        description: Evaluation Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: Data required to update an article
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateEvaluation"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '422':
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Evaluations
+      summary: Delete Evaluation
+      description: Delete evaluation
+      operationId: App\Http\Controllers\EvaluationsController::deleteEvaluation
+      parameters:
+      - name: evaluationId
+        in: path
+        description: Evaluation Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Article/Evaluation not found
+      security:
+      - bearerAuth: []
+  "/users/{userId}/evaluations":
+    get:
+      tags:
+      - Evaluations
+      summary: Get user evaluations
+      description: Retrieve user's evaluations
+      operationId: App\Http\Controllers\EvaluationsController::getUserEvaluations
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SearchUserEvaluationsRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EvaluationsCollectionResource"
+        '404':
+          description: User not found
+  "/messages":
+    post:
+      tags:
+      - Messages
+      summary: Send a message
+      description: Send a message to a specific user
+      operationId: App\Http\Controllers\MessagesController::postMessage
+      requestBody:
+        description: Data required to send a message
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/PostMessageRequest"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/MessageResource"
+      security:
+      - bearerAuth: []
+  "/messages/{messageId}":
+    put:
+      tags:
+      - Messages
+      summary: Edit a message
+      description: Edit a specific message
+      operationId: App\Http\Controllers\MessagesController::updateMessage
+      requestBody:
+        description: Data required to edit a message
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateMessageRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/MessageResource"
+      security:
+      - bearerAuth: []
+  "/users/{userId}/conversation":
+    get:
+      tags:
+      - Messages
+      summary: Get conversation with user
+      description: Retrieve conversation with a specific user
+      operationId: App\Http\Controllers\MessagesController::getConversationWithUser
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/GetConversationRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/MessagesCollectionResource"
+        '404':
+          description: User not found
+      security:
+      - bearerAuth: []
+  "/conversations/{conversationId}":
+    get:
+      tags:
+      - Messages
+      summary: Get conversation
+      description: Retrieve conversation by id
+      operationId: App\Http\Controllers\MessagesController::getConversation
+      parameters:
+      - name: conversationId
+        in: path
+        description: Conversation Id
+        required: true
+        schema:
+          type: integer
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/GetConversationRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/MessagesCollectionResource"
+        '404':
+          description: Conversation not found
+      security:
+      - bearerAuth: []
+  "/conversations":
+    get:
+      tags:
+      - Messages
+      summary: Get my conversations
+      description: Retrieve my conversations
+      operationId: App\Http\Controllers\MessagesController::getConversations
+      parameters:
+      - name: filter
+        in: query
+        description: Filter parameters
+        required: false
+        schema:
+          "$ref": "#/components/schemas/GetConversationsRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ConversationsCollectionResource"
+        '401':
+          description: Not Authenticated
+      security:
+      - bearerAuth: []
+  "/users/{userId}/block":
+    post:
+      tags:
+      - Messages
+      summary: Block user
+      description: Block messages from a given user
+      operationId: App\Http\Controllers\MessagesController::blockUser
+      parameters:
+      - name: userId
+        in: path
+        description: User Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserResource"
+        '404':
+          description: User not found
+        '422':
+          description: Cet utilisateur est déjà bloqué
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Messages
+      summary: Unblock user
+      description: Unblock messages from a given user
+      operationId: App\Http\Controllers\MessagesController::unblockUser
+      parameters:
+      - name: userId
+        in: path
+        description: User Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserResource"
+        '404':
+          description: User not found
+        '422':
+          description: Cet utilisateur n'est pas bloqué
+      security:
+      - bearerAuth: []
+  "/users/{userId}":
+    get:
+      tags:
+      - Users
+      summary: Get user informations
+      description: Retrieve informations from user's token if valid
+      operationId: App\Http\Controllers\UsersController::getUser
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserResource"
+        '404':
+          description: User not found
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Users
+      summary: Update user informations
+      description: Change user informations and visibilty of email and phone
+      operationId: App\Http\Controllers\UsersController::updateUser
+      parameters:
+      - name: userId
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Data required to update a user
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateUser"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserResource"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: User not found
+        '422':
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  "/users":
+    post:
+      tags:
+      - Users
+      summary: Create User
+      description: Create a new user
+      operationId: App\Http\Controllers\UsersController::createUser
+      requestBody:
+        description: Data required to create a user
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateUser"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserResource"
+        '422':
+          description: Unprocessable Entity
+  "/criteria":
+    post:
+      summary: Store a criterion
+      operationId: storeCriterion
+      tags:
+      - Criteria
+      security:
+      - bearerAuth: []
+      requestBody:
+        description: Data of the criterion
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the criterion
+                  maxLength: 64
+                  required: true
+                  nullable: false
+                type:
+                  type: string
+                  description: The type of the criterion, can be either 'select' or
+                    'custom'
+                  required: true
+                  nullable: false
+                data:
+                  type: string
+                  description: The data related to this criterion, it must be only
+                    used on a custom criterion
+                  required: false
+                  nullable: true
+            examples:
+              Selection criterion:
+                description: Here is an example of the body when setting up a selection
+                  criterion
+                value:
+                  name: RAM
+                  type: select
+              Custom criterion:
+                description: Here is an example of the body when setting up a custom
+                  criterion
+                value:
+                  name: RAM
+                  type: custom
+                  data:
+                    type: number
+                    min: 0
+                    max: 128
+      responses:
+        '201':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Criterion"
+              examples:
+                Selection criterion:
+                  description: Example of response when creating a selection criterion
+                  value:
+                    name: RAM
+                    type: select
+                    data: []
+                Custom criterion:
+                  description: Example of response when creating a custom criterion
+                  value:
+                    name: RAM
+                    type: custom
+                    data:
+                      type: number
+                      min: 0
+                      max: 128
+  "/criteria/{criterion}":
+    parameters:
+    - name: criterion
+      in: path
+      description: The ID of the criterion
+      schema:
+        type: number
+    get:
+      summary: Show a criterion
+      operationId: showCriterion
+      tags:
+      - Criteria
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Criterion"
+              examples:
+                Selection criterion:
+                  description: When showing a selection criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: select
+                    data:
+                    - id: 383
+                      name: 4 Go
+                    - id: 384
+                      name: 8 Go
+                    option:
+                      id: 19
+                Custom criterion:
+                  description: When showing a custom criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: custom
+                    data:
+                      type: number
+                      min: 0
+                      max: 3
+                    option:
+                      id: 19
+        '401':
+          description: Unauthenticated, you must be authenticated to access this
+        '403':
+          description: Access forbidden, you must be admin to access this
+        '404':
+          description: Model not found.
+        '422':
+          description: Invalid form.
+    patch:
+      summary: Update a criterion
+      operationId: updateCriterion
+      tags:
+      - Criteria
+      security:
+      - bearerAuth: []
+      requestBody:
+        description: The new body of the criterion
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the criterion
+                  type: string
+                  required: false
+                  nullable: false
+                  maxLength: 64
+                data:
+                  description: Data used to set up a custom criterion
+                  type: string
+                  required: false
+                  nullable: true
+                  maxLength: 512
+                option:
+                  type: object
+                  required: false
+                  nullable: true
+                  properties:
+                    id:
+                      description: The ID of the of the criterion option parent
+                      type: number
+                      required: true
+                      nullable: false
+            examples:
+              Selection criterion:
+                description: When updating a selection criterion
+                value:
+                  name: RAM
+                  option:
+                    id: 19
+              Custom criterion:
+                description: When updating a custom criterion
+                value:
+                  name: RAM
+                  data:
+                    type: number
+                    min: 0
+                    max: 3
+                  option:
+                    id: 19
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Criterion"
+              examples:
+                Selection criterion:
+                  description: When updating a selection criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: select
+                    data:
+                    - id: 383
+                      name: 4 Go
+                    - id: 384
+                      name: 8 Go
+                    option:
+                      id: 19
+                Custom criterion:
+                  description: When updating a custom criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: custom
+                    data:
+                      type: number
+                      min: 0
+                      max: 3
+                    option:
+                      id: 19
+        '401':
+          description: Unauthenticated, you must be authenticated to access this.
+        '403':
+          description: Access forbidden, you must be admin to access this.
+        '404':
+          description: Model not found.
+        '422':
+          description: Invalid form.
+    delete:
+      summary: Delete a criterion
+      operationId: deleteCriterion
+      tags:
+      - Criteria
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Criterion"
+              examples:
+                Selection criterion:
+                  description: When deleting a selection criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: select
+                    data:
+                    - id: 383
+                      name: 4 Go
+                    - id: 384
+                      name: 8 Go
+                    option:
+                      id: 19
+                Custom criterion:
+                  description: When deleting a custom criterion
+                  value:
+                    id: 405
+                    name: RAM
+                    type: custom
+                    data:
+                      type: number
+                      min: 0
+                      max: 3
+                    option:
+                      id: 19
+        '400':
+          description: Occurs when an article belongs to this criterion.
+        '401':
+          description: Unauthenticated, you must be authenticated to access this.
+        '403':
+          description: Access forbidden, you must be admin to access this.
+        '404':
+          description: Model not found.
+  "/criteria/search":
+    post:
+      summary: Index criteria
+      operationId: indexCriteria
+      tags:
+      - Criteria
+      parameters:
+      - name: q
+        in: query
+        description: The query string for the criterion search (more information on
+          ...)
+        required: false
+        schema:
+          type: string
+          example: 43=1|45=8
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Criterion"
+  "/criterion-options":
+    post:
+      summary: Store a criterion option
+      operationId: storeCriterionOption
+      tags:
+      - Criterion Options
+      security:
+      - bearerAuth: []
+      requestBody:
+        description: Data of the option
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criterion:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The ID of the parent criterion
+                      required: true
+                      nullable: false
+                name:
+                  type: string
+                  description: The name of the option
+                  maxLength: 64
+                  required: true
+                  nullable: false
+            example:
+              name: smartphone
+              criterion:
+                id: 4495
+      responses:
+        '201':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/CriterionOption"
+              example:
+                id: 49398
+                name: smartphone
+        '401':
+          description: Unauthenticated, you must be authenticated to access this
+        '403':
+          description: Access forbidden, you must be admin to access this
+        '422':
+          description: Invalid form.
+  "/criterion-options/{option}":
+    parameters:
+    - name: option
+      in: path
+      description: The ID of the option
+      schema:
+        type: number
+        example: 9494
+    get:
+      summary: Show a criterion option
+      operationId: showCriterionOption
+      tags:
+      - Criterion Options
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CriterionOption"
+              example:
+                id: 3994
+                name: smartphone
+        '401':
+          description: Unauthenticated, you must be authenticated to access this
+        '403':
+          description: Access forbidden, you must be admin to access this
+        '404':
+          description: Model not found.
+    patch:
+      summary: Update a criterion option
+      operationId: updateCriterionOption
+      tags:
+      - Criterion Options
+      security:
+      - bearerAuth: []
+      requestBody:
+        description: The new body of the option
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criterion:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The ID of the parent criterion
+                      required: true
+                      nullable: false
+                name:
+                  type: string
+                  description: The name of the option
+                  maxLength: 64
+                  required: true
+                  nullable: false
+            example:
+              name: smartphone
+              criterion:
+                id: 4495
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/CriterionOption"
+              example:
+                id: 4398
+                name: smartphone
+        '401':
+          description: Unauthenticated, you must be authenticated to access this.
+        '403':
+          description: Access forbidden, you must be admin to access this.
+        '404':
+          description: Model not found.
+        '422':
+          description: Invalid form.
+    delete:
+      summary: Delete a criterion option
+      operationId: deleteCriterionOption
+      tags:
+      - Criterion Options
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CriterionOption"
+              example:
+                id: 4398
+                name: smartphone
+        '400':
+          description: Occurs when an article belongs to this criterion option.
+        '401':
+          description: Unauthenticated, you must be authenticated to access this.
+        '403':
+          description: Access forbidden, you must be admin to access this.
+        '404':
+          description: Model not found.
+components:
+  schemas:
+    CreateArticle:
+      title: Article POST payload
+      required:
+      - title
+      - failure_comment
+      - general_comment
+      - price
+      properties:
+        title:
+          description: Title (max:64)
+          type: string
+        failure_comment:
+          description: Comment of the failure (max:2048|min:32)
+          type: string
+        general_comment:
+          description: General comment about the article (max:2048)
+          type: string
+        price:
+          description: Price of the article
+          type: integer
+        evaluation_cost:
+          description: Evaluation of the cost
+          type: integer
+          maximum: '4'
+          minimum: '0'
+        evaluation_difficulty:
+          description: Evaluation of repare difficulty
+          type: integer
+          maximum: '4'
+          minimum: '0'
+        evaluation_comment:
+          description: Evaluation comment
+          type: string
+          maximum: '128'
+      type: object
+    SearchArticlesRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - allOf:
+        - "$ref": "#/components/schemas/SearchRequest"
+        - title: Search Articles Filters
+          properties:
+            min_price:
+              description: Min price
+              type: integer
+              minimum: '0'
+            max_price:
+              description: Max price
+              type: integer
+            min_evaluation_difficulty:
+              description: Min Evaluation Difficulty
+              type: integer
+              maximum: '4'
+              minimum: '0'
+            max_evaluation_difficulty:
+              description: Max Evaluation Difficulty
+              type: integer
+              maximum: '4'
+              minimum: '0'
+            min_evaluation_cost:
+              description: Min Evaluation Cost
+              type: integer
+              maximum: '4'
+              minimum: '0'
+            max_evaluation_cost:
+              description: Max Evaluation Cost
+              type: integer
+              maximum: '4'
+              minimum: '0'
+          type: object
+    SearchRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - title: Search Filters
+        properties:
+          search:
+            description: Content to search in title, failure_comment, general_comment
+            type: string
+            example: ''
+        type: object
+    UpdateArticle:
+      title: Article PUT payload
+      required:
+      - title
+      - failure_comment
+      - general_comment
+      - price
+      properties:
+        title:
+          description: Title (max:128)
+          type: string
+        failure_comment:
+          description: Comment of the failure (max:2048|min:32)
+          type: string
+        general_comment:
+          description: General comment about the article (max:2048)
+          type: string
+        price:
+          description: Price of the article
+          type: integer
+        evaluation_cost:
+          description: Evaluation of the cost
+          type: integer
+          maximum: '4'
+          minimum: '0'
+        evaluation_difficulty:
+          description: Evaluation of repare difficulty
+          type: integer
+          maximum: '4'
+          minimum: '0'
+      type: object
+    CreateEvaluation:
+      title: Evaluation POST payload
+      properties:
+        comment:
+          description: Evaluation comment (max:2048)
+          type: string
+        cost:
+          description: Repare cost on a scale of 0 to 4
+          type: integer
+        difficulty:
+          description: Repare difficulty on a scale of 0 to 4
+          type: integer
+        article_id:
+          description: Article id link to the evaluation
+          type: integer
+      type: object
+    SearchArticleEvaluationsRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - allOf:
+        - "$ref": "#/components/schemas/SearchEvaluationsRequest"
+        - title: Search Article Evaluations Filters
+          properties:
+            difficulty:
+              description: Difficulty to search
+              type: integer
+            cost:
+              description: Cost to search
+              type: integer
+          type: object
+    SearchEvaluationsRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - title: Search Evaluations Filters
+        properties:
+          search:
+            description: Content to search in title, failure_comment, general_comment
+            type: string
+        type: object
+    SearchUserEvaluationsRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - allOf:
+        - "$ref": "#/components/schemas/SearchEvaluationsRequest"
+        - title: Search User's Evaluations Filters
+          properties:
+            difficulty:
+              description: Difficulty to search
+              type: integer
+            cost:
+              description: Cost to search
+              type: integer
+          type: object
+    UpdateEvaluation:
+      title: Evaluation PUT payload
+      properties:
+        comment:
+          description: Evaluation comment (max:2048)
+          type: string
+        cost:
+          description: Repare cost
+          type: integer
+          maximum: '4'
+          minimum: '0'
+        difficulty:
+          description: Repare difficulty
+          type: integer
+          maximum: '4'
+          minimum: '0'
+      type: object
+    Login:
+      title: Login payload
+      required:
+      - email
+      - password
+      - remember_me
+      properties:
+        email:
+          description: Email
+          type: string
+        password:
+          description: Password
+          type: string
+        remember_me:
+          description: Add 1 week to token expiration date if true
+          type: boolean
+      type: object
+    GetConversationRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - title: Get conversation with user filters
+        properties:
+          search:
+            description: Content to search in message text
+            type: string
+        type: object
+    GetConversationsRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - title: Get Conversations Filters
+        properties:
+          search:
+            description: Content to search in message text, display_name of correspondent
+            type: string
+            example: ''
+        type: object
+    PostMessageRequest:
+      title: Message POST payload
+      required:
+      - text
+      - receiver_id
+      properties:
+        text:
+          description: Text (max:2048)
+          type: string
+        receiver_id:
+          description: Id of the receiver
+          type: integer
+      type: object
+    UpdateMessageRequest:
+      title: Message PUT payload
+      required:
+      - text
+      properties:
+        text:
+          description: Text (max:2048)
+          type: string
+      type: object
+    PaginationRequest:
+      title: Pagination Filters
+      properties:
+        _page:
+          description: page to get
+          type: integer
+          minimum: '1'
+          example: '1'
+        _page_size:
+          description: Number of result by page
+          type: integer
+          maximum: '200'
+          minimum: '1'
+          example: '50'
+      type: object
+    SearchUserPurchasesRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - allOf:
+        - "$ref": "#/components/schemas/SearchRequest"
+        - title: Search User Purchases Filters
+          type: object
+    SearchUserSalesRequest:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationRequest"
+      - allOf:
+        - "$ref": "#/components/schemas/SearchRequest"
+        - title: Search User Sales Filters
+          properties:
+            min_price:
+              description: Min price
+              type: integer
+              minimum: '0'
+            max_price:
+              description: Max price
+              type: integer
+          type: object
+    CreateUser:
+      title: User POST payload
+      required:
+      - name
+      - display_name
+      - email
+      - phone
+      - show_phone
+      - show_email
+      - password
+      - password_confirmation
+      properties:
+        name:
+          description: Fullname or pseudo
+          type: string
+        display_name:
+          description: Display Name
+          type: string
+        email:
+          description: Email
+          type: string
+        show_email:
+          description: If you want other users to see your email
+          type: boolean
+          default: 'false'
+        phone:
+          description: Phone number
+          type: string
+        show_phone:
+          description: If you want other users to see your phone number
+          type: boolean
+          default: 'false'
+        password:
+          description: Password
+          type: string
+        password_confirmation:
+          description: Password confirmation
+          type: string
+      type: object
+    UpdateUser:
+      title: User PUT payload
+      required:
+      - name
+      - display_name
+      - email
+      - phone
+      - show_phone
+      - show_email
+      properties:
+        name:
+          description: Fullname or pseudo
+          type: string
+        display_name:
+          description: Display Name
+          type: string
+        email:
+          description: Email
+          type: string
+        show_email:
+          description: If you want other users to see your email
+          type: boolean
+          default: 'false'
+        phone:
+          description: Phone number
+          type: string
+        show_phone:
+          description: If you want other users to see your phone number
+          type: boolean
+          default: 'false'
+        password:
+          description: New Password
+          type: string
+        password_confirmation:
+          description: New Password confirmation
+          type: string
+        current_password:
+          description: Current password (required if email has changed or new password
+            set)
+          type: string
+      type: object
+    ArticleResource:
+      title: Article Resource
+      properties:
+        id:
+          description: Article id
+          type: integer
+        created_at:
+          description: article creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: article update time
+          type: string
+          format: date-time
+        title:
+          description: Title
+          type: string
+        failure_comment:
+          description: Comment of the failure
+          type: string
+        general_comment:
+          description: General comment about the article
+          type: string
+        price:
+          description: Price of the article
+          type: integer
+        author:
+          description: Article author
+          type: object
+          "$ref": "#/components/schemas/UserResource"
+        sold:
+          description: True if article is sold
+          type: boolean
+        images:
+          description: Article Images
+          type: array
+          items:
+            "$ref": "#/components/schemas/ImageResource"
+        average_evaluation:
+          description: Average Evaluation
+          type: object
+          "$ref": "#/components/schemas/AverageEvaluationResource"
+        is_author:
+          description: is user author of this article
+          type: boolean
+        can:
+          description: Permissions on article
+          type: object
+          "$ref": "#/components/schemas/PermissionsResource"
+      type: object
+    ArticlesCollectionResource:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationResource"
+      - title: Articles Collection Resource
+        properties:
+          data:
+            type: array
+            items:
+              "$ref": "#/components/schemas/ArticleResource"
+        type: object
+    AverageEvaluationResource:
+      title: Average Evaluation Resource
+      properties:
+        cost:
+          description: Evaluation cost
+          type: number
+          format: float
+        difficulty:
+          description: Evaluation difficulty
+          type: number
+          format: float
+        count:
+          description: Total number of evaluations for this article
+          type: number
+      type: object
+    ConversationResource:
+      title: Last Message Resource
+      properties:
+        id:
+          description: Message id
+          type: integer
+        created_at:
+          description: article creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: article update time
+          type: string
+          format: date-time
+        text:
+          description: Text
+          type: string
+        correspondent:
+          description: Message correspondent
+          type: object
+          "$ref": "#/components/schemas/UserResource"
+        message_author:
+          description: Last Message author id
+          type: integer
+      type: object
+    ConversationsCollectionResource:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationResource"
+      - title: Last Messages Collection Resource
+        properties:
+          data:
+            type: array
+            items:
+              "$ref": "#/components/schemas/ConversationResource"
+        type: object
+    EvaluationResource:
+      title: Evaluation Resource
+      properties:
+        id:
+          description: Evaluation id
+          type: integer
+        created_at:
+          description: Evaluation creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: Evaluation updated time
+          type: string
+          format: date-time
+        comment:
+          description: Evaluation comment
+          type: string
+        difficulty:
+          description: Repare difficulty
+          type: integer
+        cost:
+          description: Repare cost
+          type: integer
+        author:
+          description: Evaluation author
+          type: object
+          "$ref": "#/components/schemas/UserResource"
+        article:
+          description: Article
+          type: object
+          "$ref": "#/components/schemas/ArticleResource"
+      type: object
+    EvaluationsCollectionResource:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationResource"
+      - title: Evaluations Collection Resource
+        properties:
+          data:
+            type: array
+            items:
+              "$ref": "#/components/schemas/EvaluationResource"
+        type: object
+    ImageResource:
+      title: Image Resource
+      properties:
+        id:
+          description: Image id
+          type: integer
+        created_at:
+          description: Image creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: Image updated time
+          type: string
+          format: date-time
+        path:
+          description: Image path
+          type: string
+      type: object
+    MessageResource:
+      title: Message Resource
+      properties:
+        id:
+          description: Message id
+          type: integer
+        created_at:
+          description: article creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: article update time
+          type: string
+          format: date-time
+        text:
+          description: Text
+          type: string
+        receiver_id:
+          description: Message receiver id
+          type: integer
+        sender_id:
+          description: Message sender id
+          type: integer
+      type: object
+    MessagesCollectionResource:
+      allOf:
+      - "$ref": "#/components/schemas/PaginationResource"
+      - title: Messages Collection Resource
+        properties:
+          data:
+            type: array
+            items:
+              "$ref": "#/components/schemas/MessageResource"
+        type: object
+    PaginationResource:
+      title: Pagination Resource
+      properties:
+        page:
+          description: Page number
+          type: integer
+        page_size:
+          description: Page size
+          type: integer
+        total_size:
+          description: Total size
+          type: integer
+        total_page:
+          description: Total page
+          type: integer
+        current_size:
+          description: Data collection length
+          type: integer
+      type: object
+    PermissionsResource:
+      title: Permissions Resource
+      properties:
+        show:
+          description: User can show this article
+          type: boolean
+        edit:
+          description: User can edit this article
+          type: boolean
+        delete:
+          description: User can delete this article
+          type: boolean
+      type: object
+    UserResource:
+      title: User Resource
+      properties:
+        id:
+          description: User id
+          type: integer
+        created_at:
+          description: user creation time
+          type: string
+          format: date-time
+        updated_at:
+          description: user updated time
+          type: string
+          format: date-time
+        name:
+          description: Fullname or pseudo
+          type: string
+        display_name:
+          description: Display Name
+          type: string
+        email:
+          description: Email
+          type: string
+        show_email:
+          description: If the user email is public
+          type: boolean
+        phone:
+          description: Phone number
+          type: string
+        show_phone:
+          description: If the user phone number is public
+          type: boolean
+        is_blocked:
+          description: If the user is blocked (can't send messages)
+          type: boolean
+      type: object
+    Criterion:
+      title: Criterion
+      type: object
+      properties:
+        id:
+          description: Unique ID of the resource
+          type: integer
+        name:
+          description: Name of the criterion
+          type: string
+        type:
+          description: Type of the criterion, can be either 'select' or 'number'
+          type: string
+        value:
+          description: If given, the current value of this criterion
+          type: string
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/CriterionOption"
+        parent:
+          type: object
+          properties:
+            id:
+              description: The ID of the criterion option parent
+              type: number
+    CriterionOption:
+      title: CriterionOption
+      type: object
+      properties:
+        id:
+          description: Unique ID of the resource
+          type: integer
+        name:
+          description: Name of the option
+          type: string
+        value:
+          description: If given, check whether this value is selected or not
+          type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
