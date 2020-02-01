@@ -1,0 +1,49 @@
+title: Article
+type: object
+x-tags:
+  - Articles
+description: 'The **article** resource represents an article in the marketplace. It must be linked to a event of type **break** or **repair** to be created'
+properties:
+  type:
+    type: string
+    example: articles
+    description: Type of the resource
+  id:
+    type: integer
+    description: ID of the resource
+  attributes:
+    type: object
+    required:
+      - title
+      - comment
+      - price
+    description: Attributes of the resource
+    properties:
+      title:
+        type: string
+        description: Title of the article
+        example: I sell an iPhone 7S
+        minLength: 1
+        maxLength: 64
+      comment:
+        type: string
+        description: More details about the article
+        example: I only want to be contacted by email. Thanks.
+        minLength: 1
+        maxLength: 2048
+      price:
+        type: number
+        description: Price of the article
+        example: '32'
+        minimum: 0
+        maximum: 100000
+  relationships:
+    type: object
+    description: Relationships of the resource
+  meta:
+    type: object
+    description: Metadata of the resource
+required:
+  - type
+  - id
+  - attributes

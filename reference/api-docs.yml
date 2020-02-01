@@ -13,40 +13,77 @@ servers:
 tags:
   - Oui
 paths:
-  /articles:
+  articles:
     get:
       tags:
         - Articles
-      summary: Get all articles
-      description: Get all articles order by created_at
-      operationId: "App\\Http\\Controllers\\ArticlesController::getArticles"
-      parameters:
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchArticlesRequest'
+      summary: Get a list of articles
+      description: 'This endpoint returns a collection of **article** resources.'
+      operationId: indexArticles
+      parameters: []
       responses:
         '200':
           description: Success
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ArticlesCollectionResource'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: ../models/article.v1.yaml
+                  meta:
+                    $ref: ../models/meta.v1.yaml
+                  included:
+                    type: array
+                    description: Array of included resources
+                    items: {}
+                  links:
+                    type: object
+                    description: Array of useful links for this resource
+                required:
+                  - data
+                  - meta
+                  - included
+                  - links
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
     post:
       tags:
         - Articles
       summary: Create Article
-      description: Create Article
-      operationId: "App\\Http\\Controllers\\ArticlesController::postArticle"
+      description: 'This endpoint create an **article** resources.'
+      operationId: storeArticle
       requestBody:
-        description: Data required to post an article
+        description: ''
         required: true
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
-              $ref: '#/components/schemas/CreateArticle'
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the resource created
+                      example: articles
+                      minLength: 1
+                    attributes:
+                      type: object
+                      description: Attributes of the resource created
+                    relationships:
+                      type: object
+                      description: Relationships of the resource created
+                  required:
+                    - type
+                    - attributes
       responses:
         '201':
           description: Created
@@ -60,6 +97,7 @@ paths:
           description: Unprocessable Entity
       security:
         - bearerAuth: []
+    parameters: []
   '/articles/{articleId}':
     get:
       tags:
@@ -142,26 +180,6 @@ paths:
           description: Not Authenticated
         '403':
           description: Not Allowed
-        '404':
-          description: Article not found
-      security:
-        - bearerAuth: []
-  '/articles/{articleId}/paypal':
-    post:
-      tags:
-        - Payment
-      summary: Create an order
-      description: Create a new paypal order for this article in order to pay it
-      operationId: "App\\Http\\Controllers\\ArticlesController::createPaypalOrder"
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResource'
-        '401':
-          description: Not Authenticated
         '404':
           description: Article not found
       security:
@@ -1208,6 +1226,203 @@ paths:
           description: 'Access forbidden, you must be admin to access this.'
         '404':
           description: Model not found.
+  breaks:
+    get:
+      summary: Get all breakages
+      tags:
+        - Break
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: Data of the response
+                    items:
+                      $ref: ./break.v1.yaml
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: string
+                    description: The included resources
+                required:
+                  - data
+                  - meta
+        '422':
+          description: Unprocessable Entity
+      operationId: indexBreaks
+      description: |-
+        This endpoint return all the **break** resources that you are allowed to see.
+
+        > This endpoint is compliant with the indexation system. More informations on .
+      parameters: []
+      requestBody: {}
+    post:
+      summary: Store a new breakage
+      tags:
+        - Break
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: ./break.v1.yaml
+                required:
+                  - data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      operationId: storeBreaks
+      description: 'This endpoint creates a new **break** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - attributes
+                  properties:
+                    attributes:
+                      type: object
+                      required:
+                        - comment
+                      properties:
+                        comment:
+                          type: string
+                          example: The window is broken and needs to be replaced.
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the breakage
+              required:
+                - data
+        description: ''
+    parameters: []
+  'breaks/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a breakage
+      tags:
+        - Break
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: ./break.v1.yaml
+                required:
+                  - data
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+        '':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: ./break.v1.yaml
+                required:
+                  - data
+          description: ''
+      operationId: showBreak
+      description: 'This endpoint return the **break** resource identified by the ID.'
+      parameters: []
+    patch:
+      summary: Update a breakage
+      tags:
+        - Break
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: ./break.v1.yaml
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: updateBreak
+      description: 'This endpoint update the **break** resource identified by the ID.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          description: Details of the breakage
+                          example: The window is broken and needs to be replaced
+                          minLength: 1
+                          maxLength: 2048
+    delete:
+      summary: Delete a breakage
+      tags:
+        - Break
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./break.v1.yaml
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: deleteBreak
+      description: 'This endpoint delete the **break** resource identified by the ID.'
+      requestBody: {}
+      security:
+        - bearerAuth: []
 components:
   schemas:
     CreateArticle:
@@ -1615,16 +1830,6 @@ components:
           type: object
           $ref: '#/components/schemas/PermissionsResource'
       type: object
-    ArticlesCollectionResource:
-      allOf:
-        - $ref: '#/components/schemas/PaginationResource'
-        - title: Articles Collection Resource
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/ArticleResource'
-          type: object
     AverageEvaluationResource:
       title: Average Evaluation Resource
       properties:
