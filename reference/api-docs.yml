@@ -56,8 +56,8 @@ paths:
     post:
       tags:
         - Articles
-      summary: Create Article
-      description: 'This endpoint create an **article** resources.'
+      summary: Store an article
+      description: 'This endpoint create an **article** resource.'
       operationId: storeArticle
       requestBody:
         description: ''
@@ -77,34 +77,171 @@ paths:
                       minLength: 1
                     attributes:
                       type: object
+                      required:
+                        - title
+                        - comment
+                        - price
                       description: Attributes of the resource created
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the article
+                          example: Selling an iPhone 7S
+                          minLength: 1
+                          maxLength: 64
+                        comment:
+                          type: string
+                          example: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the articles
+                        price:
+                          type: integer
+                          description: Price of the article
+                          example: '320'
+                          minimum: 0
+                          maximum: 100000
                     relationships:
                       type: object
                       description: Relationships of the resource created
+                      properties:
+                        event:
+                          description: 'Event linked to this article, it must be a **repair** or a **break** resource'
+                          oneOf:
+                            - $ref: ../models/break.v1.yaml
+                            - $ref: ../models/repair.v1.yaml
+                        images:
+                          type: array
+                          description: Images linked to this article
+                          items:
+                            $ref: ../models/image.v1.yaml
+                        options:
+                          type: array
+                          description: Selected criterion options linked to this article
+                          items:
+                            $ref: ../models/option.v1.yaml
                   required:
                     - type
                     - attributes
+                    - relationships
+            examples:
+              Creation of a broken article:
+                value:
+                  data:
+                    type: articles
+                    atributes:
+                      name: Selling an iPhone 7S broken
+                      comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                      price: 120
+                    relationships:
+                      event:
+                        data:
+                          type: breaks
+                          id: 42
+                      image:
+                        - data:
+                            type: images
+                            id: 1
+                        - data:
+                            type: images
+                            id: 2
+                      options:
+                        - data:
+                            type: options
+                            id: 45
+                        - data:
+                            type: options
+                            id: 89
+              Creation of a repaired article:
+                value:
+                  data:
+                    type: articles
+                    atributes:
+                      name: Selling an iPhone 7S repaired
+                      comment: 'Hello, I just repaired the screen of this iPhone 7S!'
+                      price: 320
+                    relationships:
+                      event:
+                        data:
+                          type: repair
+                          id: 109
+                      image:
+                        - data:
+                            type: images
+                            id: 1
+                        - data:
+                            type: images
+                            id: 2
+                      options:
+                        - data:
+                            type: options
+                            id: 45
+                        - data:
+                            type: options
+                            id: 89
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ArticleResource'
+                type: object
+                properties:
+                  data:
+                    $ref: ../models/article.v1.yaml
+                  links:
+                    type: object
+                    description: Links related to the resource
+                  meta:
+                    type: object
+                    description: Metadata related to the resource
+              examples:
+                Broken article:
+                  value:
+                    data:
+                      id: 45
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S broken
+                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                        price: 120
+                        broken: true
+                    links:
+                      self: 'https://api.restorit.fr/articles/45'
+                    meta: {}
+                Repaired article:
+                  value:
+                    data:
+                      id: 46
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S repaired
+                        comment: 'Hello, I just repaired the screen of this iPhone 7S!'
+                        price: 320
+                        broken: false
+                    links:
+                      self: 'https://api.restorit.fr/articles/46'
+                    meta: {}
         '401':
           description: Not Authenticated
+        '403':
+          description: Forbidden
         '422':
           description: Unprocessable Entity
       security:
         - bearerAuth: []
     parameters: []
-  '/articles/{articleId}':
+  'articles/{id}':
     get:
       tags:
         - Articles
-      summary: Get article informations
-      description: Get article informations
-      operationId: "App\\Http\\Controllers\\ArticlesController::getArticle"
+      summary: Get an article
+      description: 'This endpoint returns an **article** resource.'
+      operationId: showArticle
       parameters:
         - name: articleId
           in: path
@@ -112,56 +249,70 @@ paths:
           required: true
           schema:
             type: integer
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Please refer to the JSON API article
       responses:
         '200':
           description: Success
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ArticleResource'
+                type: object
+                properties:
+                  data:
+                    $ref: ../models/article.v1.yaml
+                  links:
+                    type: object
+                    description: Links related to the resource
+                  meta:
+                    type: object
+                    description: Metadata of the resource
+              examples:
+                Broken article:
+                  value:
+                    data:
+                      id: 45
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S broken
+                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                        price: 120
+                        broken: true
+                    links:
+                      self: 'https://api.restorit.fr/articles/45'
+                    meta: {}
+                Repaired article:
+                  value:
+                    data:
+                      id: 46
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S repaired
+                        comment: 'Hello, I just repaired the screen of this iPhone 7S!'
+                        price: 320
+                        broken: false
+                    links:
+                      self: 'https://api.restorit.fr/articles/46'
+                    meta: {}
         '404':
           description: Article not found
-    put:
-      tags:
-        - Articles
-      summary: Update Article
-      description: Update Article
-      operationId: "App\\Http\\Controllers\\ArticlesController::updateArticle"
-      parameters:
-        - name: articleId
-          in: path
-          description: Article Id
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        description: Data required to update an article
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateArticle'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResource'
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
         '422':
           description: Unprocessable Entity
-      security:
-        - bearerAuth: []
+      requestBody:
+        description: ''
     delete:
       tags:
         - Articles
-      summary: Delete Article
-      description: Delete Article
-      operationId: "App\\Http\\Controllers\\ArticlesController::deleteArticle"
+      summary: Delete an article
+      description: 'Delete an **article** resource.'
+      operationId: deleteArticle
       parameters:
         - name: articleId
           in: path
@@ -171,19 +322,198 @@ paths:
             type: integer
       responses:
         '200':
-          description: Success
+          description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ArticleResource'
+                type: object
+                properties:
+                  data:
+                    type: 'null'
+                  links:
+                    type: object
+                    description: Links related to the resource
+                  meta:
+                    type: object
+                    description: Metadata of the resource
+                required:
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data: null
+                    links: {}
+                    meta: {}
         '401':
           description: Not Authenticated
         '403':
           description: Not Allowed
         '404':
           description: Article not found
+        '422':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResource'
       security:
         - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                include:
+                  type: object
+                  description: Please refer to the JSON API article
+        description: ''
+    parameters:
+      - schema:
+          type: integer
+          minimum: 1
+        name: id
+        in: path
+        description: ID of the resource
+        required: true
+    patch:
+      summary: Update an article
+      operationId: updateArticle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: ../models/article.v1.yaml
+                  links:
+                    type: object
+                    description: Links related to the resource
+                    required:
+                      - self
+                    properties:
+                      self:
+                        type: string
+                        minLength: 1
+                        description: The link related to the updated resource
+                  meta:
+                    description: Metadata of the resource
+                    type: object
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Updated article example:
+                  value:
+                    data:
+                      type: articles
+                      atributes:
+                        name: Selling an iPhone 7S broken
+                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                        price: 120
+                      relationships: {}
+                    self: {}
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **article** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the updated resource
+                      example: articles
+                      minLength: 1
+                    attributes:
+                      type: object
+                      description: ''
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the article
+                          example: Selling an iPhone 7S
+                          minLength: 1
+                          maxLength: 64
+                        comment:
+                          type: string
+                          example: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the articles
+                        price:
+                          type: integer
+                          description: Price of the article
+                          example: '320'
+                          minimum: 0
+                          maximum: 100000
+                    relationships:
+                      type: object
+                      description: ''
+                      properties:
+                        images:
+                          type: array
+                          description: Images linked to this article
+                          items:
+                            $ref: ../models/image.v1.yaml
+                        options:
+                          type: array
+                          description: Selected criterion options linked to this article
+                          items:
+                            $ref: ../models/option.v1.yaml
+                  required:
+                    - type
+                include:
+                  type: object
+                  description: Please refer to the JSON API article
+            examples:
+              Update of an article:
+                value:
+                  data:
+                    type: articles
+                    atributes:
+                      name: Selling an iPhone 7S broken
+                      comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                      price: 120
+                    relationships:
+                      image:
+                        - data:
+                            type: images
+                            id: 1
+                        - data:
+                            type: images
+                            id: 2
+                      options:
+                        - data:
+                            type: options
+                            id: 45
+                        - data:
+                            type: options
+                            id: 89
+      security:
+        - bearerAuth: []
+      tags:
+        - Articles
   '/users/{userId}/articles':
     get:
       tags:
@@ -314,64 +644,6 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  '/articles/{articleId}/evaluations':
-    get:
-      tags:
-        - Evaluations
-      summary: Get article evaluations
-      description: Get article evaluations
-      operationId: "App\\Http\\Controllers\\EvaluationsController::getArticleEvaluations"
-      parameters:
-        - name: articleId
-          in: path
-          description: Article Id
-          required: true
-          schema:
-            type: integer
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchArticleEvaluationsRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EvaluationsCollectionResource'
-        '404':
-          description: Article not found
-  '/articles/{articleId}/evaluations/{evaluationId}':
-    get:
-      tags:
-        - Evaluations
-      summary: Get article evaluation
-      description: Retrieve article evaluation by id
-      operationId: "App\\Http\\Controllers\\EvaluationsController::getEvaluation"
-      parameters:
-        - name: articleId
-          in: path
-          description: Article Id
-          required: true
-          schema:
-            type: integer
-        - name: evaluationId
-          in: path
-          description: Evaluation Id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EvaluationResource'
-        '404':
-          description: Article/Evaluation not found
   /evaluations:
     post:
       tags:
@@ -1779,56 +2051,6 @@ components:
         current_password:
           description: Current password (required if email has changed or new password set)
           type: string
-      type: object
-    ArticleResource:
-      title: Article Resource
-      properties:
-        id:
-          description: Article id
-          type: integer
-        created_at:
-          description: article creation time
-          type: string
-          format: date-time
-        updated_at:
-          description: article update time
-          type: string
-          format: date-time
-        title:
-          description: Title
-          type: string
-        failure_comment:
-          description: Comment of the failure
-          type: string
-        general_comment:
-          description: General comment about the article
-          type: string
-        price:
-          description: Price of the article
-          type: integer
-        author:
-          description: Article author
-          type: object
-          $ref: '#/components/schemas/UserResource'
-        sold:
-          description: True if article is sold
-          type: boolean
-        images:
-          description: Article Images
-          type: array
-          items:
-            $ref: '#/components/schemas/ImageResource'
-        average_evaluation:
-          description: Average Evaluation
-          type: object
-          $ref: '#/components/schemas/AverageEvaluationResource'
-        is_author:
-          description: is user author of this article
-          type: boolean
-        can:
-          description: Permissions on article
-          type: object
-          $ref: '#/components/schemas/PermissionsResource'
       type: object
     AverageEvaluationResource:
       title: Average Evaluation Resource

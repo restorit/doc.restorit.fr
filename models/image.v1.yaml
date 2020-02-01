@@ -1,0 +1,6 @@
+title: image
+type: object
+properties:
+  id:
+    type: string
+description: iamge
