@@ -18,9 +18,27 @@ paths:
       tags:
         - Articles
       summary: Get a list of articles
-      description: 'This endpoint returns a collection of **article** resources.'
+      description: 'Returns a collection of **article** resources.'
       operationId: indexArticles
-      parameters: []
+      parameters:
+        - schema:
+            type: string
+            maxLength: 0
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          example: 'filter[price][<=]=50'
+          description: Array of filter. Please refer to the JSON API article
       responses:
         '200':
           description: Success
@@ -34,30 +52,27 @@ paths:
                     items:
                       $ref: ../models/article.v1.yaml
                   meta:
-                    $ref: ../models/meta.v1.yaml
-                  included:
-                    type: array
-                    description: Array of included resources
-                    items: {}
+                    type: object
+                    description: Metadata of the collection
                   links:
                     type: object
-                    description: Array of useful links for this resource
+                    description: Links related to the collection
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
                 required:
                   - data
                   - meta
-                  - included
                   - links
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
+                  - included
         '422':
           description: Unprocessable Entity
     post:
       tags:
         - Articles
       summary: Store an article
-      description: 'This endpoint create an **article** resource.'
+      description: 'Create an **article** resource.'
       operationId: storeArticle
       requestBody:
         description: ''
@@ -69,6 +84,7 @@ paths:
               properties:
                 data:
                   type: object
+                  description: ''
                   properties:
                     type:
                       type: string
@@ -77,11 +93,11 @@ paths:
                       minLength: 1
                     attributes:
                       type: object
+                      description: ''
                       required:
                         - title
                         - comment
                         - price
-                      description: Attributes of the resource created
                       properties:
                         title:
                           type: string
@@ -103,7 +119,7 @@ paths:
                           maximum: 100000
                     relationships:
                       type: object
-                      description: Relationships of the resource created
+                      description: ''
                       properties:
                         event:
                           description: 'Event linked to this article, it must be a **repair** or a **break** resource'
@@ -124,6 +140,9 @@ paths:
                     - type
                     - attributes
                     - relationships
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
             examples:
               Creation of a broken article:
                 value:
@@ -195,6 +214,9 @@ paths:
                   meta:
                     type: object
                     description: Metadata related to the resource
+                  included:
+                    type: string
+                    description: Array of included relationships. Please refer to the JSON API article
               examples:
                 Broken article:
                   value:
@@ -240,7 +262,7 @@ paths:
       tags:
         - Articles
       summary: Get an article
-      description: 'This endpoint returns an **article** resource.'
+      description: 'Returns an **article** resource.'
       operationId: showArticle
       parameters:
         - name: articleId
@@ -251,9 +273,13 @@ paths:
             type: integer
         - schema:
             type: string
+            maxLength: 1
           in: query
           name: include
-          description: Please refer to the JSON API article
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: header
       responses:
         '200':
           description: Success
@@ -270,6 +296,10 @@ paths:
                   meta:
                     type: object
                     description: Metadata of the resource
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
               examples:
                 Broken article:
                   value:
@@ -336,9 +366,14 @@ paths:
                   meta:
                     type: object
                     description: Metadata of the resource
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
                 required:
                   - links
                   - meta
+                  - included
               examples:
                 Example:
                   value:
@@ -367,7 +402,7 @@ paths:
               properties:
                 include:
                   type: object
-                  description: Please refer to the JSON API article
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
         description: ''
     parameters:
       - schema:
@@ -393,20 +428,18 @@ paths:
                   links:
                     type: object
                     description: Links related to the resource
-                    required:
-                      - self
-                    properties:
-                      self:
-                        type: string
-                        minLength: 1
-                        description: The link related to the updated resource
                   meta:
                     description: Metadata of the resource
                     type: object
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
                 required:
                   - data
                   - links
                   - meta
+                  - included
               examples:
                 Updated article example:
                   value:
@@ -419,6 +452,7 @@ paths:
                       relationships: {}
                     self: {}
                     meta: {}
+                    included: []
         '401':
           description: Unauthorized
         '403':
@@ -439,6 +473,9 @@ paths:
               properties:
                 data:
                   type: object
+                  description: ''
+                  required:
+                    - type
                   properties:
                     type:
                       type: string
@@ -481,11 +518,12 @@ paths:
                           description: Selected criterion options linked to this article
                           items:
                             $ref: ../models/option.v1.yaml
-                  required:
-                    - type
                 include:
-                  type: object
-                  description: Please refer to the JSON API article
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
+              required:
+                - data
             examples:
               Update of an article:
                 value:
