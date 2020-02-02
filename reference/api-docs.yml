@@ -690,27 +690,123 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  /evaluations:
+  evaluations:
     post:
       tags:
         - Evaluations
-      summary: Create Article Evaluation
-      description: Create evaluation for specific article
-      operationId: "App\\Http\\Controllers\\EvaluationsController::postEvaluation"
+      summary: Store an evaluation
+      description: 'Create an **evaluation** resource.'
+      operationId: storeEvaluation
       requestBody:
-        description: Data required to post an evaluation
+        description: ''
         required: true
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
-              $ref: '#/components/schemas/CreateEvaluation'
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - evaluations
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                        cost:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                        difficulty:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                    relationships:
+                      type: object
+                      required:
+                        - article
+                      properties:
+                        article:
+                          type: object
+                          description: The article to link this evaluation to
+                          required:
+                            - data
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articel
+                                id:
+                                  type: integer
+                included:
+                  type: string
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    attributes:
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/EvaluationResource'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                  included:
+                    type: array
+                    items: {}
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
         '401':
           description: Not Authenticated
         '403':
@@ -719,70 +815,78 @@ paths:
           description: Unprocessable Entity
       security:
         - bearerAuth: []
-  '/evaluations/{evaluationId}':
-    put:
-      tags:
-        - Evaluations
-      summary: Update Evaluation
-      description: Update evaluation by evaluation Id
-      operationId: "App\\Http\\Controllers\\EvaluationsController::updateEvaluation"
-      parameters:
-        - name: evaluationId
-          in: path
-          description: Evaluation Id
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        description: Data required to update an article
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateEvaluation'
+    parameters: []
+    get:
+      summary: Get a list of evaluations
+      operationId: indexEvaluations
       responses:
         '200':
-          description: Success
+          description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/EvaluationResource'
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: string
+                  meta:
+                    type: string
+                  included:
+                    type: string
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: evaluations
+                        id: 1
+                        attributes:
+                          createdAt: '2020-02-02 00:0:00'
+                          updatedAt: '2020-02-02 00:0:00'
+                          comment: Maybe this is a problem in the graphic card...
+                          cost: 4
+                          difficulty: 1
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/evaluations/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/repairs'
+                      prev: null
+                      self: 'https://api.restorit.fr/repairs'
+                      next: null
+                      last: 'https://api.restorit.fr/repairs'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
         '422':
           description: Unprocessable Entity
-      security:
-        - bearerAuth: []
-    delete:
       tags:
         - Evaluations
-      summary: Delete Evaluation
-      description: Delete evaluation
-      operationId: "App\\Http\\Controllers\\EvaluationsController::deleteEvaluation"
+      description: 'Return a collection of **evaluation** resources.'
       parameters:
-        - name: evaluationId
-          in: path
-          description: Evaluation Id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EvaluationResource'
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
-        '404':
-          description: Article/Evaluation not found
-      security:
-        - bearerAuth: []
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
   '/users/{userId}/evaluations':
     get:
       tags:
@@ -1461,167 +1565,6 @@ paths:
         '404':
           description: Model not found.
       description: 'Delete a **criterion** resource.'
-  /criterion-options:
-    post:
-      summary: Store a criterion option
-      operationId: storeCriterionOption
-      tags:
-        - Criterion Options
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: Data of the option
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                criterion:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: The ID of the parent criterion
-                      required: true
-                      nullable: false
-                name:
-                  type: string
-                  description: The name of the option
-                  maxLength: 64
-                  required: true
-                  nullable: false
-            example:
-              name: smartphone
-              criterion:
-                id: 4495
-      responses:
-        '201':
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CriterionOption'
-              example:
-                id: 49398
-                name: smartphone
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this'
-        '403':
-          description: 'Access forbidden, you must be admin to access this'
-        '422':
-          description: Invalid form.
-  '/criterion-options/{option}':
-    parameters:
-      - name: option
-        in: path
-        description: The ID of the option
-        schema:
-          type: number
-          example: 9494
-    get:
-      summary: Show a criterion option
-      operationId: showCriterionOption
-      tags:
-        - Criterion Options
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CriterionOption'
-              example:
-                id: 3994
-                name: smartphone
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this'
-        '403':
-          description: 'Access forbidden, you must be admin to access this'
-        '404':
-          description: Model not found.
-    patch:
-      summary: Update a criterion option
-      operationId: updateCriterionOption
-      tags:
-        - Criterion Options
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: The new body of the option
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                criterion:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: The ID of the parent criterion
-                      required: true
-                      nullable: false
-                name:
-                  type: string
-                  description: The name of the option
-                  maxLength: 64
-                  required: true
-                  nullable: false
-            example:
-              name: smartphone
-              criterion:
-                id: 4495
-      responses:
-        '200':
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CriterionOption'
-              example:
-                id: 4398
-                name: smartphone
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this.'
-        '403':
-          description: 'Access forbidden, you must be admin to access this.'
-        '404':
-          description: Model not found.
-        '422':
-          description: Invalid form.
-    delete:
-      summary: Delete a criterion option
-      operationId: deleteCriterionOption
-      tags:
-        - Criterion Options
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CriterionOption'
-              example:
-                id: 4398
-                name: smartphone
-        '400':
-          description: Occurs when an article belongs to this criterion option.
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this.'
-        '403':
-          description: 'Access forbidden, you must be admin to access this.'
-        '404':
-          description: Model not found.
   breaks:
     get:
       summary: Get a list of breaks
@@ -2813,6 +2756,213 @@ paths:
       description: 'Delete an **option** resource.'
       security:
         - bearerAuth: []
+  'evaluations/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get an evaluation
+      tags:
+        - Evaluations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: string
+                  meta:
+                    type: string
+                  included:
+                    type: string
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showEvaluation
+      description: 'Returns an **evaluation** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: includes
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update an evaluation
+      operationId: updateEvaluation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                  included:
+                    type: array
+                    items: {}
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **evaluation** resource.'
+      parameters: []
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                included:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - evaluations
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                        cost:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                        difficulty:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                    relationships:
+                      type: object
+                      properties:
+                        article:
+                          type: object
+                          description: The article to link this evaluation to
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articel
+                                id:
+                                  type: integer
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    attributes:
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+        description: ''
+        required: true
+      tags:
+        - Evaluations
+    delete:
+      summary: Delete an evaluation
+      operationId: deleteEvaluation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Evaluations
+      description: 'Delete an **article** resource.'
+      security:
+        - bearerAuth: []
 components:
   schemas:
     SearchArticlesRequest:
@@ -3123,48 +3273,6 @@ components:
               items:
                 $ref: '#/components/schemas/ConversationResource'
           type: object
-    EvaluationResource:
-      title: Evaluation Resource
-      properties:
-        id:
-          description: Evaluation id
-          type: integer
-        created_at:
-          description: Evaluation creation time
-          type: string
-          format: date-time
-        updated_at:
-          description: Evaluation updated time
-          type: string
-          format: date-time
-        comment:
-          description: Evaluation comment
-          type: string
-        difficulty:
-          description: Repare difficulty
-          type: integer
-        cost:
-          description: Repare cost
-          type: integer
-        author:
-          description: Evaluation author
-          type: object
-          $ref: '#/components/schemas/UserResource'
-        article:
-          description: Article
-          type: object
-          $ref: '#/components/schemas/ArticleResource'
-      type: object
-    EvaluationsCollectionResource:
-      allOf:
-        - $ref: '#/components/schemas/PaginationResource'
-        - title: Evaluations Collection Resource
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/EvaluationResource'
-          type: object
     ImageResource:
       title: Image Resource
       properties:
@@ -3420,10 +3528,10 @@ components:
             meta: {}
           links: {}
           meta: {}
-      required:
-        - type
-        - id
-        - attributes
+      description: 'This resource represents an article in the marketplace. It must be linked to a event of type **break** or **repair** to be created.'
+      x-tags:
+        - Articles
+      type: object
       properties:
         type:
           type: string
@@ -3484,12 +3592,12 @@ components:
           type: object
           description: Metadata of the resource
         links:
-          type: string
           description: Links related to this resource
-      description: 'This resource represents an article in the marketplace. It must be linked to a event of type **break** or **repair** to be created.'
-      x-tags:
-        - Articles
-      type: object
+          type: object
+      required:
+        - type
+        - id
+        - attributes
     Break:
       title: Break
       x-tags:
@@ -3536,6 +3644,12 @@ components:
             author:
               type: object
               description: Author of the break
+        meta:
+          type: string
+          description: Metadata of the resource
+        links:
+          type: string
+          description: Links related to this resource
       required:
         - type
         - id
@@ -3544,6 +3658,15 @@ components:
       title: Repair
       type: object
       description: This represents a repaired object. You need to create one if you want to create a repaired object article then.
+      x-examples:
+        Example:
+          type: repairs
+          id: 1
+          attributes:
+            comment: "I changed the broken screen and now it's ok !"
+          relationships: {}
+          links:
+            self: 'http://api.restorit.fr/repairs/1'
       properties:
         type:
           type: string
@@ -3573,19 +3696,83 @@ components:
             break:
               type: string
               description: Break linked to this repair
+        meta:
+          type: object
+        links:
+          type: object
       required:
         - type
         - id
         - attributes
+    Evaluation:
+      title: Evaluation
+      type: object
+      description: This represents an article evaluation.
       x-examples:
         Example:
-          type: repairs
+          type: evaluations
           id: 1
           attributes:
-            comment: "I changed the broken screen and now it's ok !"
+            createdAt: '2020-02-02 00:0:00'
+            updatedAt: '2020-02-02 00:0:00'
+            comment: Maybe this is a problem in the graphic card...
+            cost: 4
+            difficulty: 1
           relationships: {}
           links:
-            self: 'http://api.restorit.fr/repairs/1'
+            self: 'https://api.restorit.fr/evaluations/1'
+          meta: {}
+      properties:
+        type:
+          type: string
+          enum:
+            - evaluations
+        id:
+          type: integer
+        attributes:
+          type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            comment:
+              type: string
+              minLength: 1
+              maxLength: 2048
+              description: ''
+            cost:
+              type: integer
+              minimum: 0
+              maximum: 5
+            difficulty:
+              type: integer
+              minimum: 0
+              maximum: 5
+        relationships:
+          type: object
+          properties:
+            author:
+              type: object
+              description: The user that created the evaluation
+            article:
+              type: object
+              description: The article linked to this evaluation
+        links:
+          type: object
+        meta:
+          type: object
+      required:
+        - type
+        - id
+        - attributes
+        - links
+        - meta
   securitySchemes:
     bearerAuth:
       type: http
