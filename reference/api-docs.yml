@@ -50,7 +50,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: ../models/article.v1.yaml
+                      $ref: '#/components/schemas/Article'
                   meta:
                     type: object
                     description: Metadata of the collection
@@ -120,12 +120,25 @@ paths:
                     relationships:
                       type: object
                       description: ''
+                      required:
+                        - event
                       properties:
                         event:
                           description: 'Event linked to this article, it must be a **repair** or a **break** resource'
-                          oneOf:
-                            - $ref: ../models/break.v1.yaml
-                            - $ref: ../models/repair.v1.yaml
+                          type: object
+                          required:
+                            - type
+                            - id
+                          properties:
+                            type:
+                              type: string
+                              enum:
+                                - breaks
+                                - repairs
+                              description: Type of the resource to link
+                            id:
+                              type: integer
+                              description: ID of the resource to link
                         images:
                           type: array
                           description: Images linked to this article
@@ -207,16 +220,20 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: ../models/article.v1.yaml
+                    $ref: '#/components/schemas/Article'
                   links:
                     type: object
-                    description: Links related to the resource
+                    description: Links related to the response
                   meta:
                     type: object
-                    description: Metadata related to the resource
+                    description: Metadata of the response
                   included:
                     type: string
                     description: Array of included relationships. Please refer to the JSON API article
+                required:
+                  - data
+                  - links
+                  - meta
               examples:
                 Broken article:
                   value:
@@ -230,9 +247,12 @@ paths:
                         comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
                         price: 120
                         broken: true
-                    links:
-                      self: 'https://api.restorit.fr/articles/45'
+                      links:
+                        self: 'https://api.restorit.fr/articles/45'
+                      meta: {}
+                    links: {}
                     meta: {}
+                    included: {}
                 Repaired article:
                   value:
                     data:
@@ -245,9 +265,12 @@ paths:
                         comment: 'Hello, I just repaired the screen of this iPhone 7S!'
                         price: 320
                         broken: false
-                    links:
-                      self: 'https://api.restorit.fr/articles/46'
+                      links:
+                        self: 'https://api.restorit.fr/articles/46'
+                      meta: {}
+                    links: {}
                     meta: {}
+                    included: {}
         '401':
           description: Not Authenticated
         '403':
@@ -289,22 +312,26 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: ../models/article.v1.yaml
+                    $ref: '#/components/schemas/Article'
                   links:
                     type: object
-                    description: Links related to the resource
+                    description: Links related to the response
                   meta:
                     type: object
-                    description: Metadata of the resource
+                    description: Metadata of the response
                   included:
                     type: array
                     description: Array of included relationships. Please refer to the JSON API article
                     items: {}
+                required:
+                  - data
+                  - links
+                  - meta
               examples:
-                Broken article:
+                Example:
                   value:
                     data:
-                      id: 45
+                      id: 1
                       type: articles
                       atributes:
                         createdAt: '2020-01-01 00:00:00'
@@ -313,24 +340,12 @@ paths:
                         comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
                         price: 120
                         broken: true
-                    links:
-                      self: 'https://api.restorit.fr/articles/45'
+                      links:
+                        self: 'https://api.restorit.fr/articles/1'
+                      meta: {}
+                    links: {}
                     meta: {}
-                Repaired article:
-                  value:
-                    data:
-                      id: 46
-                      type: articles
-                      atributes:
-                        createdAt: '2020-01-01 00:00:00'
-                        updatedAt: '2020-01-01 00:00:00'
-                        name: Selling an iPhone 7S repaired
-                        comment: 'Hello, I just repaired the screen of this iPhone 7S!'
-                        price: 320
-                        broken: false
-                    links:
-                      self: 'https://api.restorit.fr/articles/46'
-                    meta: {}
+                    included: []
         '404':
           description: Article not found
         '422':
@@ -358,27 +373,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: 'null'
-                  links:
-                    type: object
-                    description: Links related to the resource
                   meta:
                     type: object
-                    description: Metadata of the resource
-                  included:
-                    description: Array of included relationships. Please refer to the JSON API article
-                    type: array
-                    items: {}
+                    description: Metadata of the response
                 required:
-                  - links
                   - meta
-                  - included
               examples:
                 Example:
                   value:
-                    data: null
-                    links: {}
                     meta: {}
         '401':
           description: Not Authenticated
@@ -424,7 +426,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: ../models/article.v1.yaml
+                    $ref: '#/components/schemas/Article'
                   links:
                     type: object
                     description: Links related to the resource
@@ -441,16 +443,22 @@ paths:
                   - meta
                   - included
               examples:
-                Updated article example:
+                Example:
                   value:
                     data:
+                      id: 1
                       type: articles
                       atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
                         name: Selling an iPhone 7S broken
                         comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
                         price: 120
-                      relationships: {}
-                    self: {}
+                        broken: true
+                      links:
+                        self: 'https://api.restorit.fr/articles/1'
+                      meta: {}
+                    links: {}
                     meta: {}
                     included: []
         '401':
@@ -479,7 +487,7 @@ paths:
                   properties:
                     type:
                       type: string
-                      description: Type of the updated resource
+                      description: Type of the resource to update
                       example: articles
                       minLength: 1
                     attributes:
@@ -525,7 +533,7 @@ paths:
               required:
                 - data
             examples:
-              Update of an article:
+              Example:
                 value:
                   data:
                     type: articles
@@ -1084,7 +1092,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        description: Data of the criterion to store
+        description: ''
         required: true
         content:
           application/vnd.api+json:
@@ -1093,26 +1101,36 @@ paths:
               properties:
                 data:
                   type: object
-                  properties:
-                    relationships:
-                      type: string
-                      description: The relationships of the resource
-                    attributes:
-                      type: string
-                      description: The attributes of the resource
-                      nullable: true
-                    type:
-                      type: string
-                      description: The type of the resource
-                      nullable: false
-                    id:
-                      type: number
-                      description: The unique ID of the resource
                   required:
                     - type
                     - attributes
-                    - relationships
-                    - id
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - criteria
+                    attributes:
+                      type: object
+                      required:
+                        - name
+                        - priority
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                          description: Name of the criterion
+                        priority:
+                          type: string
+                          minLength: 0
+                          maxLength: 255
+                          description: Display priority of the criterion
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
             examples:
               Example:
                 description: Here is an example of the body when setting up a selection criterion
@@ -1120,25 +1138,64 @@ paths:
                   data:
                     type: criteria
                     attributes:
-                      name: RAM
+                      name: brand
+                      priority: 1
       responses:
         '201':
-          description: A successful response
+          description: OK
           content:
             application/vnd.api+json:
               schema:
                 type: object
-                properties: {}
-      description: Store a criterion object in the database
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **criterion** resource'
     parameters: []
     get:
-      summary: ''
+      summary: Get a list of criteria
       operationId: indexCriteria
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
                 type: object
                 properties:
@@ -1146,23 +1203,77 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: string
+                    description: Array of included relationships. Please refer to the JSON API article
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: criteria
+                        id: 1
+                        attributes:
+                          name: brand
+                          priority: 1
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/criteria/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/criteria'
+                      prev: null
+                      self: 'https://api.restorit.fr/criteria'
+                      next: null
+                      last: 'https://api.restorit.fr/criteria'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
         '422':
           description: Unprocessable Entity
-      description: Get a list of criteria
+      description: 'Return a collection of **criterion** resources.'
       security:
         - bearerAuth: []
-      parameters: []
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
       tags:
         - Criteria
-  'criteria/{criterion}':
+  'criteria/{id}':
     parameters:
-      - name: criterion
+      - schema:
+          type: string
+        name: id
         in: path
-        description: The ID of the criterion
-        schema:
-          type: number
+        required: true
     get:
-      summary: Show a criterion
+      summary: Get a criterion
       operationId: showCriterion
       tags:
         - Criteria
@@ -1170,45 +1281,55 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: A successful response
+          description: OK
           content:
-            application/json:
+            application.vnd.api+json:
               schema:
-                $ref: '#/components/schemas/Criterion'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: string
+                    description: Array of included relationships. Please refer to the JSON API article
+                required:
+                  - data
+                  - links
+                  - meta
               examples:
-                Selection criterion:
+                Example:
                   description: When showing a selection criterion
                   value:
-                    id: 405
-                    name: RAM
-                    type: select
                     data:
-                      - id: 383
-                        name: 4 Go
-                      - id: 384
-                        name: 8 Go
-                    option:
-                      id: 19
-                Custom criterion:
-                  description: When showing a custom criterion
-                  value:
-                    id: 405
-                    name: RAM
-                    type: custom
-                    data:
-                      type: number
-                      min: 0
-                      max: 3
-                    option:
-                      id: 19
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this'
-        '403':
-          description: 'Access forbidden, you must be admin to access this'
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
         '404':
           description: Model not found.
         '422':
           description: Invalid form.
+      description: 'Return a **criterion** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
     patch:
       summary: Update a criterion
       operationId: updateCriterion
@@ -1217,85 +1338,87 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        description: The new body of the criterion
+        description: ''
         required: true
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
               type: object
               properties:
-                name:
-                  description: Name of the criterion
-                  type: string
-                  required: false
-                  nullable: false
-                  maxLength: 64
                 data:
-                  description: Data used to set up a custom criterion
-                  type: string
-                  required: false
-                  nullable: true
-                  maxLength: 512
-                option:
                   type: object
-                  required: false
-                  nullable: true
+                  required:
+                    - type
                   properties:
-                    id:
-                      description: The ID of the of the criterion option parent
-                      type: number
-                      required: true
-                      nullable: false
+                    type:
+                      type: string
+                      description: Type of the updated resource
+                      enum:
+                        - criteria
+                    attributes:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the criterion
+                        priority:
+                          type: integer
+                          description: Display priority of the criterion
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
             examples:
-              Selection criterion:
+              Example:
                 description: When updating a selection criterion
                 value:
-                  name: RAM
-                  option:
-                    id: 19
-              Custom criterion:
-                description: When updating a custom criterion
-                value:
-                  name: RAM
                   data:
-                    type: number
-                    min: 0
-                    max: 3
-                  option:
-                    id: 19
+                    type: criteria
+                    attributes:
+                      name: brand
+                      priority: 1
       responses:
         '200':
-          description: A successful response
+          description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/Criterion'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
               examples:
-                Selection criterion:
+                Example:
                   description: When updating a selection criterion
                   value:
-                    id: 405
-                    name: RAM
-                    type: select
                     data:
-                      - id: 383
-                        name: 4 Go
-                      - id: 384
-                        name: 8 Go
-                    option:
-                      id: 19
-                Custom criterion:
-                  description: When updating a custom criterion
-                  value:
-                    id: 405
-                    name: RAM
-                    type: custom
-                    data:
-                      type: number
-                      min: 0
-                      max: 3
-                    option:
-                      id: 19
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
         '401':
           description: 'Unauthenticated, you must be authenticated to access this.'
         '403':
@@ -1304,6 +1427,7 @@ paths:
           description: Model not found.
         '422':
           description: Invalid form.
+      description: 'Update a **criterion** resource.'
     delete:
       summary: Delete a criterion
       operationId: deleteCriterion
@@ -1315,35 +1439,19 @@ paths:
         '200':
           description: A successful response
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/Criterion'
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
               examples:
-                Selection criterion:
-                  description: When deleting a selection criterion
+                Example:
                   value:
-                    id: 405
-                    name: RAM
-                    type: select
-                    data:
-                      - id: 383
-                        name: 4 Go
-                      - id: 384
-                        name: 8 Go
-                    option:
-                      id: 19
-                Custom criterion:
-                  description: When deleting a custom criterion
-                  value:
-                    id: 405
-                    name: RAM
-                    type: custom
-                    data:
-                      type: number
-                      min: 0
-                      max: 3
-                    option:
-                      id: 19
+                    meta: {}
         '400':
           description: Occurs when an article belongs to this criterion.
         '401':
@@ -1352,29 +1460,7 @@ paths:
           description: 'Access forbidden, you must be admin to access this.'
         '404':
           description: Model not found.
-  /criteria/search:
-    post:
-      summary: Index criteria
-      operationId: indexCriteria
-      tags:
-        - Criteria
-      parameters:
-        - name: q
-          in: query
-          description: The query string for the criterion search (more information on ...)
-          required: false
-          schema:
-            type: string
-            example: '43=1|45=8'
-      responses:
-        '200':
-          description: A successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Criterion'
+      description: 'Delete a **criterion** resource.'
   /criterion-options:
     post:
       summary: Store a criterion option
@@ -1538,7 +1624,7 @@ paths:
           description: Model not found.
   breaks:
     get:
-      summary: Get all breakages
+      summary: Get a list of breaks
       tags:
         - Break
       responses:
@@ -1551,30 +1637,72 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    description: Data of the response
-                    items:
-                      $ref: ./break.v1.yaml
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
                   meta:
                     type: object
                     description: Metadata of the response
                   included:
-                    type: string
-                    description: The included resources
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
                 required:
                   - data
+                  - links
                   - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: breaks
+                        id: 1
+                        attributes:
+                          comment: The camera is not working anymore...
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/breaks/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/breaks'
+                      prev: null
+                      self: 'https://api.restorit.fr/breaks'
+                      next: null
+                      last: 'https://api.restorit.fr/breaks'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
         '422':
           description: Unprocessable Entity
       operationId: indexBreaks
-      description: |-
-        This endpoint return all the **break** resources that you are allowed to see.
-
-        > This endpoint is compliant with the indexation system. More informations on .
-      parameters: []
+      description: 'Return a collection of **break** resources.'
+      parameters:
+        - schema:
+            type: string
+            maxLength: 0
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+            minLength: 1
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
       requestBody: {}
     post:
-      summary: Store a new breakage
+      summary: Store a break
       tags:
         - Break
       responses:
@@ -1586,9 +1714,36 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: ./break.v1.yaml
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
                 required:
                   - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
         '401':
           description: Unauthorized
         '403':
@@ -1596,33 +1751,57 @@ paths:
         '422':
           description: Unprocessable Entity
       operationId: storeBreaks
-      description: 'This endpoint creates a new **break** resource.'
+      description: 'Create a **break** resource.'
       security:
         - bearerAuth: []
       requestBody:
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
               type: object
               properties:
                 data:
                   type: object
+                  description: ''
                   required:
+                    - type
                     - attributes
                   properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - breaks
                     attributes:
                       type: object
+                      description: ''
                       required:
                         - comment
                       properties:
                         comment:
                           type: string
-                          example: The window is broken and needs to be replaced.
+                          description: Details of the break
                           minLength: 1
                           maxLength: 2048
-                          description: Details of the breakage
+                    relationships:
+                      type: object
+                      properties:
+                        author:
+                          description: Author linked to this break
+                          type: object
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
               required:
                 - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    attributes:
+                      comment: The camera is not working anymore...
         description: ''
     parameters: []
   'breaks/{id}':
@@ -1634,41 +1813,63 @@ paths:
         required: true
         description: ID of the resource
     get:
-      summary: Get a breakage
+      summary: Get a break
       tags:
         - Break
       responses:
         '200':
-          description: OK
           content:
             application/vnd.api+json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: ./break.v1.yaml
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
                 required:
                   - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+          description: OK
         '404':
           description: Not Found
         '422':
           description: Unprocessable Entity
-        '':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: ./break.v1.yaml
-                required:
-                  - data
-          description: ''
       operationId: showBreak
-      description: 'This endpoint return the **break** resource identified by the ID.'
-      parameters: []
+      description: 'Return a **break** resource.'
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
     patch:
-      summary: Update a breakage
+      summary: Update a break
       tags:
         - Break
       responses:
@@ -1680,7 +1881,36 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: ./break.v1.yaml
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
         '403':
           description: Forbidden
         '404':
@@ -1688,38 +1918,74 @@ paths:
         '422':
           description: Unprocessable Entity
       operationId: updateBreak
-      description: 'This endpoint update the **break** resource identified by the ID.'
+      description: 'Update a **break** resource.'
       security:
         - bearerAuth: []
       requestBody:
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
               type: object
               properties:
                 data:
                   type: object
+                  required:
+                    - type
                   properties:
+                    type:
+                      type: string
+                      enum:
+                        - breaks
+                      description: Type of the updated resource
                     attributes:
                       type: object
                       properties:
                         comment:
                           type: string
-                          description: Details of the breakage
-                          example: The window is broken and needs to be replaced
+                          description: Details of the break
                           minLength: 1
                           maxLength: 2048
+                    relationships:
+                      type: object
+                      properties:
+                        author:
+                          type: object
+                          description: Author linked to this break
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    attributes:
+                      comment: The camera is not working anymore...
+        description: ''
     delete:
-      summary: Delete a breakage
+      summary: Delete a break
       tags:
         - Break
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: ./break.v1.yaml
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
         '401':
           description: Unauthorized
         '403':
@@ -1729,47 +1995,826 @@ paths:
         '422':
           description: Unprocessable Entity
       operationId: deleteBreak
-      description: 'This endpoint delete the **break** resource identified by the ID.'
+      description: 'Delete a **break** resource.'
       requestBody: {}
+      security:
+        - bearerAuth: []
+      parameters: []
+  repairs:
+    get:
+      summary: Get a list of repairs
+      tags:
+        - Repairs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/repairs'
+                      prev: null
+                      self: 'https://api.restorit.fr/repairs'
+                      next: null
+                      last: 'https://api.restorit.fr/repairs'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      operationId: indexRepairs
+      description: 'Return a collection of **repair** resources.'
+      parameters:
+        - schema:
+            type: string
+            minLength: 0
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+    parameters: []
+    post:
+      summary: Store a repair
+      operationId: storeRepair
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **repair** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - repairs
+                      description: Type of the created resource
+                    attributes:
+                      type: object
+                      required:
+                        - comment
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the repair
+                    relationships:
+                      type: object
+                      required:
+                        - break
+                      properties:
+                        break:
+                          type: object
+                          description: Break that this repair refers to
+                          required:
+                            - data
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - breaks
+                                  description: Type of the resource to link
+                                id:
+                                  type: integer
+                                  description: ID of the break resource to link
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 0
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    - type: repairs
+                      attributes:
+                        comment: "I changed the broken screen and now it's ok !"
+                      relationships:
+                        break:
+                          data:
+                            type: breaks
+                            id: 1
+        description: ''
+      tags:
+        - Repairs
+  'repairs/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a repair
+      tags:
+        - Repairs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  links:
+                    description: Links related to the response
+                    type: object
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                required:
+                  - meta
+                  - links
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showRepair
+      description: 'Return a **repair** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update a repair
+      operationId: updateRepair
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **repair** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the updated resource
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          description: Details of the repair
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    - type: repairs
+                      attributes:
+                        comment: "I changed the broken screen and now it's ok !"
+        description: ''
+      tags:
+        - Repairs
+    delete:
+      summary: Delete a repair
+      operationId: deleteRepair
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Delete a **repair** resource'
+      security:
+        - bearerAuth: []
+      tags:
+        - Repairs
+  options:
+    get:
+      summary: Get a list of options
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Option'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/criteria'
+                      prev: null
+                      self: 'https://api.restorit.fr/criteria'
+                      next: null
+                      last: 'https://api.restorit.fr/criteria'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      operationId: indexOptions
+      description: 'Return a collection of **option** resources.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      tags:
+        - Options
+    parameters: []
+    post:
+      summary: Store an option
+      operationId: storeOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create an **option** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - options
+                    attributes:
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the option
+                          minLength: 1
+                          maxLength: 64
+                    relationships:
+                      type: object
+                      required:
+                        - criterion
+                      properties:
+                        criterion:
+                          type: object
+                          required:
+                            - data
+                          description: Parent criterion to link
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - criteria
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                        parents:
+                          type: object
+                          description: Parent options
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - options
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: options
+                    attributes:
+                      name: Apple
+                    relationships:
+                      criterion:
+                        data:
+                          type: criteria
+                          id: 1
+                      parents:
+                        data:
+                          - type: options
+                            id: 2
+      tags:
+        - Options
+  'options/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get an option
+      tags:
+        - Options
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showOption
+      description: 'Return an **option** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update an option
+      operationId: updateOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Option'
+                  links:
+                    type: string
+                    description: Links related to the response
+                  meta:
+                    type: string
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **option** resource.'
+      tags:
+        - Options
+      parameters: []
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - options
+                      description: Type of the updated resource
+                    attributes:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                          description: Name of the option
+                    relationships:
+                      type: object
+                      properties:
+                        criterion:
+                          type: object
+                          description: Parent criterion to link
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - criteria
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                        parents:
+                          type: object
+                          description: Parent options
+                          properties:
+                            data:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                    description: Type of resource
+                                  id:
+                                    type: integer
+                                    description: ID of the resource
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+    delete:
+      summary: Delete an option
+      operationId: deleteOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Options
+      description: 'Delete an **option** resource.'
       security:
         - bearerAuth: []
 components:
   schemas:
-    CreateArticle:
-      title: Article POST payload
-      required:
-        - title
-        - failure_comment
-        - general_comment
-        - price
-      properties:
-        title:
-          description: 'Title (max:64)'
-          type: string
-        failure_comment:
-          description: 'Comment of the failure (max:2048|min:32)'
-          type: string
-        general_comment:
-          description: 'General comment about the article (max:2048)'
-          type: string
-        price:
-          description: Price of the article
-          type: integer
-        evaluation_cost:
-          description: Evaluation of the cost
-          type: integer
-          maximum: '4'
-          minimum: '0'
-        evaluation_difficulty:
-          description: Evaluation of repare difficulty
-          type: integer
-          maximum: '4'
-          minimum: '0'
-        evaluation_comment:
-          description: Evaluation comment
-          type: string
-          maximum: '128'
-      type: object
     SearchArticlesRequest:
       allOf:
         - $ref: '#/components/schemas/PaginationRequest'
@@ -1815,53 +2860,6 @@ components:
               type: string
               example: ''
           type: object
-    UpdateArticle:
-      title: Article PUT payload
-      required:
-        - title
-        - failure_comment
-        - general_comment
-        - price
-      properties:
-        title:
-          description: 'Title (max:128)'
-          type: string
-        failure_comment:
-          description: 'Comment of the failure (max:2048|min:32)'
-          type: string
-        general_comment:
-          description: 'General comment about the article (max:2048)'
-          type: string
-        price:
-          description: Price of the article
-          type: integer
-        evaluation_cost:
-          description: Evaluation of the cost
-          type: integer
-          maximum: '4'
-          minimum: '0'
-        evaluation_difficulty:
-          description: Evaluation of repare difficulty
-          type: integer
-          maximum: '4'
-          minimum: '0'
-      type: object
-    CreateEvaluation:
-      title: Evaluation POST payload
-      properties:
-        comment:
-          description: 'Evaluation comment (max:2048)'
-          type: string
-        cost:
-          description: Repare cost on a scale of 0 to 4
-          type: integer
-        difficulty:
-          description: Repare difficulty on a scale of 0 to 4
-          type: integer
-        article_id:
-          description: Article id link to the evaluation
-          type: integer
-      type: object
     SearchArticleEvaluationsRequest:
       allOf:
         - $ref: '#/components/schemas/PaginationRequest'
@@ -2090,21 +3088,6 @@ components:
           description: Current password (required if email has changed or new password set)
           type: string
       type: object
-    AverageEvaluationResource:
-      title: Average Evaluation Resource
-      properties:
-        cost:
-          description: Evaluation cost
-          type: number
-          format: float
-        difficulty:
-          description: Evaluation difficulty
-          type: number
-          format: float
-        count:
-          description: Total number of evaluations for this article
-          type: number
-      type: object
     ConversationResource:
       title: Last Message Resource
       properties:
@@ -2305,61 +3288,51 @@ components:
     Criterion:
       title: Criterion
       type: object
-      description: The criterion resource
+      description: 'This represents a criterion. **criterion** and **option** resources are used to classify **article** resources in many categories.'
       x-examples:
         Example:
-          data:
-            type: criteria
-            id: 42
-            attributes:
-              name: RAM
-            relationships:
-              options:
-                - type: criterion-options
-                  id: 42
-                  attributes:
-                    name: 4 Go
-                  relationships: {}
-                - type: criterion-options
-                  id: 42
-                  attributes:
-                    name: 8 Go
-                  relationships: {}
+          type: criteria
+          id: 1
+          attributes:
+            name: brand
+            priority: 1
+          relationships: {}
+          links:
+            self: 'https://api.restorit.fr/criteria/1'
+          meta: {}
       x-tags:
         - Criteria
       properties:
-        data:
+        type:
+          type: string
+          description: Type of the resource
+          enum:
+            - criteria
+        id:
+          type: integer
+          description: ID of the resource
+        attributes:
           type: object
+          description: ''
           required:
-            - type
-            - id
-            - attributes
-            - relationships
+            - name
+            - priority
           properties:
-            type:
+            name:
               type: string
-              description: The type of the resource
-            id:
-              type: integer
-              description: The unique ID of the resource
-            attributes:
-              type: object
-              description: Attributes of the resource
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  description: Name of the criterion
-            relationships:
-              type: object
-              description: Relationships of the resource
-              properties:
-                options:
-                  type: array
-                  description: Options related to this criterion
-                  items:
-                    $ref: '#/components/schemas/CriterionOption'
+              description: Name of the criterion
+            priority:
+              type: string
+              description: Display priority of the criterion
+        relationships:
+          type: object
+          description: ''
+          properties:
+            options:
+              type: array
+              description: Options related to this criterion
+              items:
+                $ref: '#/components/schemas/CriterionOption'
         links:
           type: object
           description: Links related to the resource
@@ -2367,22 +3340,252 @@ components:
           type: object
           description: Metadata of the resource
       required:
-        - data
+        - type
+        - id
+        - attributes
         - links
         - meta
-    CriterionOption:
-      title: CriterionOption
+    Option:
+      title: Option
+      type: object
+      description: 'This represents a criterion option. **criterion** and **option** resources are used to classify **article** resources in many categories.'
+      properties:
+        type:
+          type: string
+          enum:
+            - options
+          description: Type of resource
+        id:
+          type: integer
+          description: ID of the resource
+        attributes:
+          required:
+            - name
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the option
+              minLength: 1
+              maxLength: 64
+        relationships:
+          type: object
+          properties:
+            criterion:
+              type: object
+              description: Parent criterion of this option
+            parents:
+              type: string
+              description: Parents of this option
+            children:
+              type: string
+              description: Children of this option
+        links:
+          type: object
+          description: Links related to this resource
+        meta:
+          type: object
+          description: Metadata of the resource
+      required:
+        - type
+        - id
+        - attributes
+        - relationships
+      x-examples:
+        Example:
+          type: options
+          id: 1
+          attributes:
+            name: Apple
+          relationships: {}
+          links:
+            self: 'https://api.restorit.fr/options/1'
+          meta: {}
+    Article:
+      title: Article
+      x-examples:
+        Example:
+          data:
+            id: 45
+            type: articles
+            atributes:
+              createdAt: '2020-01-01 00:00:00'
+              updatedAt: '2020-01-01 00:00:00'
+              name: Selling an iPhone 7S broken
+              comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+              price: 120
+              broken: true
+            links:
+              self: 'https://api.restorit.fr/articles/45'
+            meta: {}
+          links: {}
+          meta: {}
+      required:
+        - type
+        - id
+        - attributes
+      properties:
+        type:
+          type: string
+          example: articles
+          description: Type of the resource
+        id:
+          type: integer
+          description: ID of the resource
+        attributes:
+          type: object
+          description: ''
+          required:
+            - title
+            - comment
+            - price
+          properties:
+            title:
+              type: string
+              description: Title of the article
+              example: I sell an iPhone 7S
+              minLength: 1
+              maxLength: 64
+            comment:
+              type: string
+              description: More details about the article
+              example: I only want to be contacted by email. Thanks.
+              minLength: 1
+              maxLength: 2048
+            price:
+              type: number
+              description: Price of the article
+              example: 32
+              minimum: 0
+              maximum: 100000
+        relationships:
+          type: object
+          description: ''
+          properties:
+            options:
+              description: Criterion options linked to the article
+              type: object
+            event:
+              type: object
+              description: Event linked to the article
+            images:
+              type: object
+              description: Images of the article
+            evaluations:
+              type: object
+              description: Evaluations linked to the article
+            sale:
+              type: object
+              description: 'If sold, the sale linked to this article'
+            negociations:
+              type: object
+              description: Negocations linked to this article
+        meta:
+          type: object
+          description: Metadata of the resource
+        links:
+          type: string
+          description: Links related to this resource
+      description: 'This resource represents an article in the marketplace. It must be linked to a event of type **break** or **repair** to be created.'
+      x-tags:
+        - Articles
+      type: object
+    Break:
+      title: Break
+      x-tags:
+        - Break
+      x-examples:
+        Example:
+          type: breaks
+          id: 42
+          attributes:
+            comment: The window is broken and needs a replacement
+          relationships: []
+          links:
+            self: 'http://api.restorit.fr/breaks/42'
+      description: This represents a broken object. You need to create one if you want to create a broken object article then.
       type: object
       properties:
-        id:
-          description: Unique ID of the resource
-          type: integer
-        name:
-          description: Name of the option
+        type:
           type: string
-        value:
-          description: 'If given, check whether this value is selected or not'
-          type: boolean
+          description: Type of the resource
+          enum:
+            - breaks
+          example: breaks
+        id:
+          type: integer
+          description: ID of the resource
+          example: '42'
+        attributes:
+          type: object
+          required:
+            - comment
+          properties:
+            comment:
+              type: string
+              description: Comment giving the details of the breakage
+              example: The window is broken and needs a replacement
+              minLength: 1
+              maxLength: 2048
+        relationships:
+          type: object
+          properties:
+            article:
+              description: Article linked to this break
+              type: object
+            author:
+              type: object
+              description: Author of the break
+      required:
+        - type
+        - id
+        - attributes
+    Repair:
+      title: Repair
+      type: object
+      description: This represents a repaired object. You need to create one if you want to create a repaired object article then.
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          enum:
+            - repairs
+        id:
+          type: integer
+          description: ID of the resource
+          example: '1'
+        attributes:
+          type: object
+          required:
+            - comment
+          properties:
+            comment:
+              type: string
+              description: Details of the repair
+              minLength: 1
+              maxLength: 2048
+        relationships:
+          type: object
+          properties:
+            article:
+              type: string
+              description: Article linked to this repair
+            break:
+              type: string
+              description: Break linked to this repair
+      required:
+        - type
+        - id
+        - attributes
+      x-examples:
+        Example:
+          type: repairs
+          id: 1
+          attributes:
+            comment: "I changed the broken screen and now it's ok !"
+          relationships: {}
+          links:
+            self: 'http://api.restorit.fr/repairs/1'
   securitySchemes:
     bearerAuth:
       type: http

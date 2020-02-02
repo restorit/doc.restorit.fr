@@ -1,6 +1,0 @@
-title: collection-links
-type: object
-properties:
-  id:
-    type: string
-description: Default links of an enpoint collection response.

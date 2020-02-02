@@ -1,5 +1,0 @@
-title: repair
-type: object
-properties:
-  id:
-    type: string
