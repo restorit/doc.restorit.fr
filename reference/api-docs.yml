@@ -1,15 +1,16 @@
 openapi: 3.0.0
 info:
   title: "Restor'It"
-  description: "The documentation of the Restor'It API"
+  description: "The documentation of Restor'It API"
   contact:
-    email: florian.dorre@epitech.eu
-  version: '1'
+    email: clement@sanchez.sh
+    name: Clément SANCHEZ
+  version: '2.0'
 servers:
   - url: 'https://api.restorit.fr/'
-    description: "Restor'it API"
+    description: Production
   - url: 'http://localhost:8000/'
-    description: "Local Restor'it API"
+    description: Development
 tags:
   - Oui
 paths:
@@ -2963,107 +2964,323 @@ paths:
       description: 'Delete an **article** resource.'
       security:
         - bearerAuth: []
+  negociations:
+    get:
+      summary: Get a list of negociations
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Negociation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: negociations
+                        id: 1
+                        attributes:
+                          price: 130
+                        links:
+                          self: 'https://api.restorit.fr/negociations/1'
+                    links:
+                      first: 'https://api.restorit.fr/negociations'
+                      prev: null
+                      self: 'https://api.restorit.fr/negociations'
+                      next: null
+                      last: 'https://api.restorit.fr/negociations'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      operationId: indexNegociations
+      description: 'Return a collection of **negociation** resources.'
+      parameters: []
+      security:
+        - bearerAuth: []
+    parameters: []
+    post:
+      summary: Store a negociation
+      operationId: storeNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Negociation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **negociation** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - negociations
+                    attributes:
+                      type: object
+                      properties:
+                        price:
+                          type: number
+                          minimum: 0
+                          maximum: 100000
+                          description: The price proposed for this article
+                      required:
+                        - price
+                    relationships:
+                      type: object
+                      required:
+                        - article
+                        - message
+                      properties:
+                        article:
+                          required:
+                            - data
+                          description: The negociated article
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articles
+                                id:
+                                  type: integer
+                        message:
+                          description: An optional message to link to this negociation
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - messages
+                                id:
+                                  type: integer
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    attributes:
+                      price: 130
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
+        description: ''
+  'negociations/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a negociation
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Negociation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showNegociation
+      description: 'Return a **negociation** resource'
+      security:
+        - bearerAuth: []
+    patch:
+      summary: Update a negociation
+      operationId: updateNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties: {}
+      description: 'Update a **negociation** resource'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: 'The value must be **negociations**'
+                    attributes:
+                      type: object
+                      properties:
+                        price:
+                          type: string
+                          description: The price proposed for this article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    attributes:
+                      price: 130
+    delete:
+      summary: Delete a negociation
+      operationId: deleteNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Delete a **negociation** resource'
+      security:
+        - bearerAuth: []
 components:
   schemas:
-    SearchArticlesRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - allOf:
-            - $ref: '#/components/schemas/SearchRequest'
-            - title: Search Articles Filters
-              properties:
-                min_price:
-                  description: Min price
-                  type: integer
-                  minimum: '0'
-                max_price:
-                  description: Max price
-                  type: integer
-                min_evaluation_difficulty:
-                  description: Min Evaluation Difficulty
-                  type: integer
-                  maximum: '4'
-                  minimum: '0'
-                max_evaluation_difficulty:
-                  description: Max Evaluation Difficulty
-                  type: integer
-                  maximum: '4'
-                  minimum: '0'
-                min_evaluation_cost:
-                  description: Min Evaluation Cost
-                  type: integer
-                  maximum: '4'
-                  minimum: '0'
-                max_evaluation_cost:
-                  description: Max Evaluation Cost
-                  type: integer
-                  maximum: '4'
-                  minimum: '0'
-              type: object
-    SearchRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - title: Search Filters
-          properties:
-            search:
-              description: 'Content to search in title, failure_comment, general_comment'
-              type: string
-              example: ''
-          type: object
-    SearchArticleEvaluationsRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - allOf:
-            - $ref: '#/components/schemas/SearchEvaluationsRequest'
-            - title: Search Article Evaluations Filters
-              properties:
-                difficulty:
-                  description: Difficulty to search
-                  type: integer
-                cost:
-                  description: Cost to search
-                  type: integer
-              type: object
-    SearchEvaluationsRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - title: Search Evaluations Filters
-          properties:
-            search:
-              description: 'Content to search in title, failure_comment, general_comment'
-              type: string
-          type: object
-    SearchUserEvaluationsRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - allOf:
-            - $ref: '#/components/schemas/SearchEvaluationsRequest'
-            - title: "Search User's Evaluations Filters"
-              properties:
-                difficulty:
-                  description: Difficulty to search
-                  type: integer
-                cost:
-                  description: Cost to search
-                  type: integer
-              type: object
-    UpdateEvaluation:
-      title: Evaluation PUT payload
-      properties:
-        comment:
-          description: 'Evaluation comment (max:2048)'
-          type: string
-        cost:
-          description: Repare cost
-          type: integer
-          maximum: '4'
-          minimum: '0'
-        difficulty:
-          description: Repare difficulty
-          type: integer
-          maximum: '4'
-          minimum: '0'
-      type: object
     Login:
       title: Login payload
       required:
@@ -3122,43 +3339,6 @@ components:
           description: 'Text (max:2048)'
           type: string
       type: object
-    PaginationRequest:
-      title: Pagination Filters
-      properties:
-        _page:
-          description: page to get
-          type: integer
-          minimum: '1'
-          example: '1'
-        _page_size:
-          description: Number of result by page
-          type: integer
-          maximum: '200'
-          minimum: '1'
-          example: '50'
-      type: object
-    SearchUserPurchasesRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - allOf:
-            - $ref: '#/components/schemas/SearchRequest'
-            - title: Search User Purchases Filters
-              type: object
-    SearchUserSalesRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - allOf:
-            - $ref: '#/components/schemas/SearchRequest'
-            - title: Search User Sales Filters
-              properties:
-                min_price:
-                  description: Min price
-                  type: integer
-                  minimum: '0'
-                max_price:
-                  description: Max price
-                  type: integer
-              type: object
     CreateUser:
       title: User POST payload
       required:
@@ -3325,38 +3505,6 @@ components:
               items:
                 $ref: '#/components/schemas/MessageResource'
           type: object
-    PaginationResource:
-      title: Pagination Resource
-      properties:
-        page:
-          description: Page number
-          type: integer
-        page_size:
-          description: Page size
-          type: integer
-        total_size:
-          description: Total size
-          type: integer
-        total_page:
-          description: Total page
-          type: integer
-        current_size:
-          description: Data collection length
-          type: integer
-      type: object
-    PermissionsResource:
-      title: Permissions Resource
-      properties:
-        show:
-          description: User can show this article
-          type: boolean
-        edit:
-          description: User can edit this article
-          type: boolean
-        delete:
-          description: User can delete this article
-          type: boolean
-      type: object
     UserResource:
       title: User Resource
       properties:
@@ -3773,7 +3921,60 @@ components:
         - attributes
         - links
         - meta
+    Negociation:
+      title: Negociation
+      type: object
+      description: 'Represent an article purchase proposition, it can be applied to any article.'
+      x-tags:
+        - Negociations
+      properties:
+        type:
+          type: string
+          description: ''
+        id:
+          type: string
+          description: ''
+        attributes:
+          type: object
+          properties:
+            price:
+              type: number
+              minimum: 0
+              maximum: 100000
+              description: The proposed price for the article
+            cancelled:
+              type: boolean
+            accepted:
+              type: boolean
+          required:
+            - price
+            - cancelled
+            - accepted
+        relationships:
+          type: object
+          properties:
+            sale:
+              type: object
+              description: 'If the negociation is accepted, this is the related sale resource'
+            negociator:
+              type: object
+              description: The negociation author
+            message:
+              type: object
+              description: A linked message
+            article:
+              type: object
+              description: The negociated article
+        links:
+          type: object
+        meta:
+          type: object
+      required:
+        - type
+        - id
+        - links
+        - meta
   securitySchemes:
     bearerAuth:
       type: http
-      scheme: bearer
+      scheme: Bearer
