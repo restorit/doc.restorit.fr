@@ -7,7 +7,7 @@ info:
     name: Clément SANCHEZ
   version: '2.0'
 servers:
-  - url: 'https://api.restorit.fr/'
+  - url: 'https://v2.api.restorit.fr/'
     description: Production
   - url: 'http://localhost:8000/'
     description: Development
