@@ -7,14 +7,14 @@ info:
     name: Clément SANCHEZ
   version: '2.0'
 servers:
-  - url: 'https://v2.api.restorit.fr/'
+  - url: 'https://v2.api.restorit.fr'
     description: Production
-  - url: 'http://localhost:8000/'
+  - url: 'http://localhost:8000'
     description: Development
 tags:
   - Oui
 paths:
-  articles:
+  '/articles':
     get:
       tags:
         - Articles
@@ -281,7 +281,7 @@ paths:
       security:
         - bearerAuth: []
     parameters: []
-  'articles/{id}':
+  '/articles/{id}':
     get:
       tags:
         - Articles
@@ -561,7 +561,7 @@ paths:
         - bearerAuth: []
       tags:
         - Articles
-  '/users/{userId}/articles':
+  '/users/{id}/articles':
     get:
       tags:
         - Articles
@@ -590,7 +590,7 @@ paths:
                 $ref: '#/components/schemas/ArticlesCollectionResource'
         '404':
           description: User not found
-  '/users/{userId}/sales':
+  '/users/{id}/sales':
     get:
       tags:
         - Users
@@ -623,7 +623,7 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  '/users/{userId}/purchases':
+  '/users/{id}/purchases':
     get:
       tags:
         - Users
@@ -656,7 +656,7 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  /auth/login:
+  '/auth/login':
     post:
       tags:
         - Authentication
@@ -677,7 +677,7 @@ paths:
           description: Invalid credentials
         '422':
           description: Unprocessable Entity
-  /auth/logout:
+  '/auth/logout':
     get:
       tags:
         - Authentication
@@ -691,7 +691,7 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  evaluations:
+  '/evaluations':
     post:
       tags:
         - Evaluations
@@ -888,7 +888,7 @@ paths:
           in: query
           name: filter
           description: Array of filter. Please refer to the JSON API article
-  '/users/{userId}/evaluations':
+  '/users/{id}/evaluations':
     get:
       tags:
         - Evaluations
@@ -917,7 +917,7 @@ paths:
                 $ref: '#/components/schemas/EvaluationsCollectionResource'
         '404':
           description: User not found
-  /messages:
+  '/messages':
     post:
       tags:
         - Messages
@@ -940,7 +940,7 @@ paths:
                 $ref: '#/components/schemas/MessageResource'
       security:
         - bearerAuth: []
-  '/messages/{messageId}':
+  '/messages/{id}':
     put:
       tags:
         - Messages
@@ -963,7 +963,7 @@ paths:
                 $ref: '#/components/schemas/MessageResource'
       security:
         - bearerAuth: []
-  '/users/{userId}/conversation':
+  '/users/{id}/conversation':
     get:
       tags:
         - Messages
@@ -994,7 +994,7 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  '/conversations/{conversationId}':
+  '/conversations/{id}':
     get:
       tags:
         - Messages
@@ -1025,32 +1025,66 @@ paths:
           description: Conversation not found
       security:
         - bearerAuth: []
-  /conversations:
+  '/conversations':
     get:
       tags:
-        - Messages
-      summary: Get my conversations
-      description: Retrieve my conversations
-      operationId: "App\\Http\\Controllers\\MessagesController::getConversations"
+        - Conversations
+      summary: Get a list of conversations
+      description: 'Returns a collection of **conversation** resources.'
+      operationId: indexConversations
       parameters:
-        - name: filter
+        - schema:
+            type: string
+            maxLength: 0
+            minLength: 1
           in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/GetConversationsRequest'
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          example: 'filter[price][<=]=50'
+          description: Array of filter. Please refer to the JSON API article
       responses:
         '200':
           description: Success
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/ConversationsCollectionResource'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+                  meta:
+                    type: object
+                    description: Metadata of the collection
+                  links:
+                    type: object
+                    description: Links related to the collection
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - meta
+                  - links
+                  - included
+        '422':
+          description: Unprocessable Entity
         '401':
           description: Not Authenticated
       security:
         - bearerAuth: []
-  '/users/{userId}/block':
+  '/users/{id}/block':
     post:
       tags:
         - Messages
@@ -1103,7 +1137,7 @@ paths:
           description: "Cet utilisateur n'est pas bloqué"
       security:
         - bearerAuth: []
-  '/users/{userId}':
+  '/users/{id}':
     get:
       tags:
         - Users
@@ -1165,7 +1199,7 @@ paths:
           description: Unprocessable Entity
       security:
         - bearerAuth: []
-  /users:
+  '/users':
     post:
       tags:
         - Users
@@ -1188,7 +1222,7 @@ paths:
                 $ref: '#/components/schemas/UserResource'
         '422':
           description: Unprocessable Entity
-  criteria:
+  '/criteria':
     post:
       summary: Store a criterion
       operationId: storeCriterion
@@ -1370,7 +1404,7 @@ paths:
           description: Array of filter. Please refer to the JSON API article
       tags:
         - Criteria
-  'criteria/{id}':
+  '/criteria/{id}':
     parameters:
       - schema:
           type: string
@@ -1566,7 +1600,7 @@ paths:
         '404':
           description: Model not found.
       description: 'Delete a **criterion** resource.'
-  breaks:
+  '/breaks':
     get:
       summary: Get a list of breaks
       tags:
@@ -1748,7 +1782,7 @@ paths:
                       comment: The camera is not working anymore...
         description: ''
     parameters: []
-  'breaks/{id}':
+  '/breaks/{id}':
     parameters:
       - schema:
           type: integer
@@ -1944,7 +1978,7 @@ paths:
       security:
         - bearerAuth: []
       parameters: []
-  repairs:
+  '/repairs':
     get:
       summary: Get a list of repairs
       tags:
@@ -2145,7 +2179,7 @@ paths:
         description: ''
       tags:
         - Repairs
-  'repairs/{id}':
+  '/repairs/{id}':
     parameters:
       - schema:
           type: integer
@@ -2326,7 +2360,7 @@ paths:
         - bearerAuth: []
       tags:
         - Repairs
-  options:
+  '/options':
     get:
       summary: Get a list of options
       responses:
@@ -2545,7 +2579,7 @@ paths:
                             id: 2
       tags:
         - Options
-  'options/{id}':
+  '/options/{id}':
     parameters:
       - schema:
           type: integer
@@ -2757,7 +2791,7 @@ paths:
       description: 'Delete an **option** resource.'
       security:
         - bearerAuth: []
-  'evaluations/{id}':
+  '/evaluations/{id}':
     parameters:
       - schema:
           type: integer
@@ -2964,7 +2998,7 @@ paths:
       description: 'Delete an **article** resource.'
       security:
         - bearerAuth: []
-  negociations:
+  '/negociations':
     get:
       summary: Get a list of negociations
       tags: []
@@ -3134,7 +3168,7 @@ paths:
                           type: articles
                           id: 1
         description: ''
-  'negociations/{id}':
+  '/negociations/{id}':
     parameters:
       - schema:
           type: integer
@@ -3974,6 +4008,55 @@ components:
         - id
         - links
         - meta
+    Conversation:
+      title: Conversation
+      type: object
+      x-tags:
+        - Conversations
+      description: This resource represents a conversation.
+      x-examples:
+        Example:
+          data:
+            id: 45
+            type: conversations
+            atributes:
+              createdAt: '2020-01-01 00:00:00'
+              updatedAt: '2020-01-01 00:00:00'
+            links:
+              self: 'https://v2.api.restorit.fr/conversations/45'
+            meta: {}
+          links: {}
+          meta: {}
+      properties:
+        id:
+          type: integer
+          description: ID of the conversation
+        links:
+          description: Links related to this resource
+          type: object
+        meta:
+          type: object
+          description: Metadata of the resource
+        relationships:
+          type: object
+          description: ''
+          properties:
+            user1:
+              description: User that created the conversation
+              type: object
+            user2:
+              type: object
+              description: Correspondent
+            lastMessage:
+              type: object
+              description: Last message of the conversation
+        type:
+          type: string
+          example: conversations
+          description: Type of the resource
+      required:
+        - id
+        - type
   securitySchemes:
     bearerAuth:
       type: http
