@@ -2580,8 +2580,6 @@ paths:
           description: Article not found
         '422':
           description: Unprocessable Entity
-      requestBody:
-        description: ''
     delete:
       tags:
         - Articles
@@ -2611,12 +2609,6 @@ paths:
           description: Not Allowed
         '404':
           description: Article not found
-        '422':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResource'
       security:
         - bearerAuth: []
       requestBody:
@@ -2629,14 +2621,14 @@ paths:
                   type: object
                   description: Comma separated list of relationships to include. Please refer to the JSON API article
         description: ''
-    parameters:
-      - schema:
-          type: integer
-          minimum: 1
-        name: id
-        in: path
-        description: ID of the resource
-        required: true
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
     patch:
       summary: Update an article
       operationId: updateArticle
@@ -2743,12 +2735,12 @@ paths:
                           type: array
                           description: Images linked to this article
                           items:
-                            $ref: ../models/image.v1.yaml
+                            $ref: '#/components/schemas/Image'
                         options:
                           type: array
                           description: Selected criterion options linked to this article
                           items:
-                            $ref: ../models/option.v1.yaml
+                            $ref: '#/components/schemas/Option'
                 include:
                   type: string
                   description: Comma separated list of relationships to include. Please refer to the JSON API article
@@ -2807,7 +2799,6 @@ paths:
             type: array
           in: query
           name: filter
-          example: 'filter[price][<=]=50'
           description: Array of filter. Please refer to the JSON API article
       responses:
         '200':
@@ -2884,7 +2875,7 @@ paths:
                         price:
                           type: integer
                           description: Price of the article
-                          example: '320'
+                          example: 320
                           minimum: 0
                           maximum: 100000
                     relationships:
@@ -2913,12 +2904,12 @@ paths:
                           type: array
                           description: Images linked to this article
                           items:
-                            $ref: ../models/image.v1.yaml
+                            $ref: '#/components/schemas/Image'
                         options:
                           type: array
                           description: Selected criterion options linked to this article
                           items:
-                            $ref: ../models/option.v1.yaml
+                            $ref: '#/components/schemas/Option'
                   required:
                     - type
                     - attributes
@@ -3052,7 +3043,7 @@ paths:
     parameters: []
 components:
   schemas:
-    ImageResource:
+    Image:
       title: Image Resource
       properties:
         id:
@@ -3177,7 +3168,7 @@ components:
               type: array
               description: Options related to this criterion
               items:
-                $ref: '#/components/schemas/CriterionOption'
+                $ref: '#/components/schemas/Criterion'
         links:
           type: object
           description: Links related to the resource
@@ -3413,7 +3404,7 @@ components:
         id:
           type: integer
           description: ID of the resource
-          example: '1'
+          example: 1
         attributes:
           type: object
           required:
