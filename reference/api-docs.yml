@@ -1,4 +1,19 @@
 openapi: 3.0.0
+tags:
+  - name: Json Api
+  - name: Users
+  - name: Authentication
+  - name: Breaks
+  - name: Articles
+  - name: Images
+  - name: Evaluations
+  - name: Negociations
+  - name: Sales
+  - name: Repairs
+  - name: Conversations
+  - name: Messages
+  - name: Criteria
+  - name: Options
 info:
   title: "Restor'It"
   description: "The documentation of Restor'It API"
@@ -11,10 +26,2764 @@ servers:
     description: Production
   - url: 'http://localhost:8000'
     description: Development
-tags:
-  - Oui
 paths:
-  '/articles':
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Get access token for existing user
+      operationId: "login"
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Invalid credentials
+        '422':
+          description: Unprocessable Entity
+  /messages:
+    post:
+      tags:
+        - Messages
+      summary: Send a message
+      description: Send a message to a specific user
+      operationId: "storeMessage"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResource'
+      security:
+        - bearerAuth: []
+  /conversations:
+    get:
+      tags:
+        - Conversations
+      summary: Get a list of conversations
+      description: 'Returns a collection of **conversation** resources.'
+      operationId: indexConversations
+      parameters:
+        - schema:
+            type: string
+            maxLength: 0
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+                  meta:
+                    type: object
+                    description: Metadata of the collection
+                  links:
+                    type: object
+                    description: Links related to the collection
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - meta
+                  - links
+                  - included
+        '401':
+          description: Not Authenticated
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create User
+      description: Create a new user
+      operationId: storeUser
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResource'
+        '422':
+          description: Unprocessable Entity
+  '/negociations/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a negociation
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Negociation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showNegociation
+      description: 'Return a **negociation** resource'
+      security:
+        - bearerAuth: []
+    patch:
+      tags: [Negociations]
+      summary: Update a negociation
+      operationId: updateNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties: {}
+      description: 'Update a **negociation** resource'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: 'The value must be **negociations**'
+                    attributes:
+                      type: object
+                      properties:
+                        price:
+                          type: string
+                          description: The price proposed for this article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    attributes:
+                      price: 130
+    delete:
+      tags: [Negociations]
+      summary: Delete a negociation
+      operationId: deleteNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Delete a **negociation** resource'
+      security:
+        - bearerAuth: []
+  /negociations:
+    get:
+      summary: Get a list of negociations
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Negociation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: negociations
+                        id: 1
+                        attributes:
+                          price: 130
+                        links:
+                          self: 'https://api.restorit.fr/negociations/1'
+                    links:
+                      first: 'https://api.restorit.fr/negociations'
+                      prev: null
+                      self: 'https://api.restorit.fr/negociations'
+                      next: null
+                      last: 'https://api.restorit.fr/negociations'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      operationId: indexNegociations
+      description: 'Return a collection of **negociation** resources.'
+      parameters: []
+      security:
+        - bearerAuth: []
+    parameters: []
+    post:
+      tags: [Negociations]
+      summary: Store a negociation
+      operationId: storeNegociation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Negociation'
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: negociations
+                      id: 1
+                      attributes:
+                        price: 130
+                      links:
+                        self: 'https://api.restorit.fr/negociations/1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **negociation** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - negociations
+                    attributes:
+                      type: object
+                      properties:
+                        price:
+                          type: number
+                          minimum: 0
+                          maximum: 100000
+                          description: The price proposed for this article
+                      required:
+                        - price
+                    relationships:
+                      type: object
+                      required:
+                        - article
+                        - message
+                      properties:
+                        article:
+                          required:
+                            - data
+                          description: The negociated article
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articles
+                                id:
+                                  type: integer
+                        message:
+                          description: An optional message to link to this negociation
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - messages
+                                id:
+                                  type: integer
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    attributes:
+                      price: 130
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
+        description: ''
+  '/evaluations/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get an evaluation
+      tags:
+        - Evaluations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: string
+                  meta:
+                    type: string
+                  included:
+                    type: string
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showEvaluation
+      description: 'Returns an **evaluation** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: includes
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update an evaluation
+      operationId: updateEvaluation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                  included:
+                    type: array
+                    items: {}
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **evaluation** resource.'
+      parameters: []
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                included:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - evaluations
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                        cost:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                        difficulty:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                    relationships:
+                      type: object
+                      properties:
+                        article:
+                          type: object
+                          description: The article to link this evaluation to
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articel
+                                id:
+                                  type: integer
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    attributes:
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+        description: ''
+        required: true
+      tags:
+        - Evaluations
+    delete:
+      summary: Delete an evaluation
+      operationId: deleteEvaluation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Evaluations
+      description: 'Delete an **article** resource.'
+      security:
+        - bearerAuth: []
+  '/options/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get an option
+      tags:
+        - Options
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showOption
+      description: 'Return an **option** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update an option
+      operationId: updateOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Option'
+                  links:
+                    type: string
+                    description: Links related to the response
+                  meta:
+                    type: string
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **option** resource.'
+      tags:
+        - Options
+      parameters: []
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - options
+                      description: Type of the updated resource
+                    attributes:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                          description: Name of the option
+                    relationships:
+                      type: object
+                      properties:
+                        criterion:
+                          type: object
+                          description: Parent criterion to link
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - criteria
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                        parents:
+                          type: object
+                          description: Parent options
+                          properties:
+                            data:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                    description: Type of resource
+                                  id:
+                                    type: integer
+                                    description: ID of the resource
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+    delete:
+      summary: Delete an option
+      operationId: deleteOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Options
+      description: 'Delete an **option** resource.'
+      security:
+        - bearerAuth: []
+  /options:
+    get:
+      summary: Get a list of options
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Option'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/criteria'
+                      prev: null
+                      self: 'https://api.restorit.fr/criteria'
+                      next: null
+                      last: 'https://api.restorit.fr/criteria'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      operationId: indexOptions
+      description: 'Return a collection of **option** resources.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      tags:
+        - Options
+    parameters: []
+    post:
+      summary: Store an option
+      operationId: storeOption
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: options
+                        id: 1
+                        attributes:
+                          name: Apple
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/options/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create an **option** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - options
+                    attributes:
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the option
+                          minLength: 1
+                          maxLength: 64
+                    relationships:
+                      type: object
+                      required:
+                        - criterion
+                      properties:
+                        criterion:
+                          type: object
+                          required:
+                            - data
+                          description: Parent criterion to link
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - criteria
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                        parents:
+                          type: object
+                          description: Parent options
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Type of resource
+                                  enum:
+                                    - options
+                                id:
+                                  type: integer
+                                  description: ID of the resource
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: options
+                    attributes:
+                      name: Apple
+                    relationships:
+                      criterion:
+                        data:
+                          type: criteria
+                          id: 1
+                      parents:
+                        data:
+                          - type: options
+                            id: 2
+      tags:
+        - Options
+  '/repairs/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a repair
+      tags:
+        - Repairs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  links:
+                    description: Links related to the response
+                    type: object
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                required:
+                  - meta
+                  - links
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showRepair
+      description: 'Return a **repair** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update a repair
+      operationId: updateRepair
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **repair** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the updated resource
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          description: Details of the repair
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    - type: repairs
+                      attributes:
+                        comment: "I changed the broken screen and now it's ok !"
+        description: ''
+      tags:
+        - Repairs
+    delete:
+      summary: Delete a repair
+      operationId: deleteRepair
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Delete a **repair** resource'
+      security:
+        - bearerAuth: []
+      tags:
+        - Repairs
+  /repairs:
+    get:
+      summary: Get a list of repairs
+      tags:
+        - Repairs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/repairs'
+                      prev: null
+                      self: 'https://api.restorit.fr/repairs'
+                      next: null
+                      last: 'https://api.restorit.fr/repairs'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      operationId: indexRepairs
+      description: 'Return a collection of **repair** resources.'
+      parameters:
+        - schema:
+            type: string
+            minLength: 0
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+    parameters: []
+    post:
+      summary: Store a repair
+      operationId: storeRepair
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: repairs
+                        id: 1
+                        attributes:
+                          comment: "I changed the broken screen and now it's ok !"
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/repairs/1'
+                        meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **repair** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - repairs
+                      description: Type of the created resource
+                    attributes:
+                      type: object
+                      required:
+                        - comment
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the repair
+                    relationships:
+                      type: object
+                      required:
+                        - break
+                      properties:
+                        break:
+                          type: object
+                          description: Break that this repair refers to
+                          required:
+                            - data
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - breaks
+                                  description: Type of the resource to link
+                                id:
+                                  type: integer
+                                  description: ID of the break resource to link
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 0
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    - type: repairs
+                      attributes:
+                        comment: "I changed the broken screen and now it's ok !"
+                      relationships:
+                        break:
+                          data:
+                            type: breaks
+                            id: 1
+        description: ''
+      tags:
+        - Repairs
+  '/breaks/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: ID of the resource
+    get:
+      summary: Get a break
+      tags:
+        - Breaks
+      responses:
+        '200':
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+          description: OK
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: showBreak
+      description: 'Return a **break** resource.'
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update a break
+      tags:
+        - Breaks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: updateBreak
+      description: 'Update a **break** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - breaks
+                      description: Type of the updated resource
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          description: Details of the break
+                          minLength: 1
+                          maxLength: 2048
+                    relationships:
+                      type: object
+                      properties:
+                        author:
+                          type: object
+                          description: Author linked to this break
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    attributes:
+                      comment: The camera is not working anymore...
+        description: ''
+    delete:
+      summary: Delete a break
+      tags:
+        - Breaks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      operationId: deleteBreak
+      description: 'Delete a **break** resource.'
+      security:
+        - bearerAuth: []
+      parameters: []
+  /breaks:
+    get:
+      summary: Get a list of breaks
+      tags:
+        - Breaks
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Repair'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: breaks
+                        id: 1
+                        attributes:
+                          comment: The camera is not working anymore...
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/breaks/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/breaks'
+                      prev: null
+                      self: 'https://api.restorit.fr/breaks'
+                      next: null
+                      last: 'https://api.restorit.fr/breaks'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      operationId: indexBreaks
+      description: 'Return a collection of **break** resources.'
+      parameters:
+        - schema:
+            type: string
+            maxLength: 0
+            minLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+            minLength: 1
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+    post:
+      summary: Store a break
+      tags:
+        - Breaks
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Break'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    description: Array of included relationships. Please refer to the JSON API article
+                    type: array
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: breaks
+                      id: 1
+                      attributes:
+                        comment: The camera is not working anymore...
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/breaks/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      operationId: storeBreaks
+      description: 'Create a **break** resource.'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  description: ''
+                  required:
+                    - type
+                    - attributes
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - breaks
+                    attributes:
+                      type: object
+                      description: ''
+                      required:
+                        - comment
+                      properties:
+                        comment:
+                          type: string
+                          description: Details of the break
+                          minLength: 1
+                          maxLength: 2048
+                    relationships:
+                      type: object
+                      properties:
+                        author:
+                          description: Author linked to this break
+                          type: object
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    attributes:
+                      comment: The camera is not working anymore...
+        description: ''
+    parameters: []
+  '/criteria/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get a criterion
+      operationId: showCriterion
+      tags:
+        - Criteria
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application.vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: string
+                    description: Array of included relationships. Please refer to the JSON API article
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  description: When showing a selection criterion
+                  value:
+                    data:
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Model not found.
+        '422':
+          description: Invalid form.
+      description: 'Return a **criterion** resource.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+    patch:
+      summary: Update a criterion
+      operationId: updateCriterion
+      tags:
+        - Criteria
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the updated resource
+                      enum:
+                        - criteria
+                    attributes:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the criterion
+                        priority:
+                          type: integer
+                          description: Display priority of the criterion
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                description: When updating a selection criterion
+                value:
+                  data:
+                    type: criteria
+                    attributes:
+                      name: brand
+                      priority: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  description: When updating a selection criterion
+                  value:
+                    data:
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: 'Unauthenticated, you must be authenticated to access this.'
+        '403':
+          description: 'Access forbidden, you must be admin to access this.'
+        '404':
+          description: Model not found.
+        '422':
+          description: Invalid form.
+      description: 'Update a **criterion** resource.'
+    delete:
+      summary: Delete a criterion
+      operationId: deleteCriterion
+      tags:
+        - Criteria
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '400':
+          description: Occurs when an article belongs to this criterion.
+        '401':
+          description: 'Unauthenticated, you must be authenticated to access this.'
+        '403':
+          description: 'Access forbidden, you must be admin to access this.'
+        '404':
+          description: Model not found.
+      description: 'Delete a **criterion** resource.'
+  /criteria:
+    post:
+      summary: Store a criterion
+      operationId: storeCriterion
+      tags:
+        - Criteria
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the created resource
+                      enum:
+                        - criteria
+                    attributes:
+                      type: object
+                      required:
+                        - name
+                        - priority
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                          description: Name of the criterion
+                        priority:
+                          type: string
+                          minLength: 0
+                          maxLength: 255
+                          description: Display priority of the criterion
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+              required:
+                - data
+            examples:
+              Example:
+                description: Here is an example of the body when setting up a selection criterion
+                value:
+                  data:
+                    type: criteria
+                    attributes:
+                      name: brand
+                      priority: 1
+      responses:
+        '201':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Criterion'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: criteria
+                      id: 1
+                      attributes:
+                        name: brand
+                        priority: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/criteria/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      description: 'Create a **criterion** resource'
+    parameters: []
+    get:
+      summary: Get a list of criteria
+      operationId: indexCriteria
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Criterion'
+                  links:
+                    description: Links related to the response
+                    type: object
+                  meta:
+                    description: Metadata of the response
+                    type: object
+                  included:
+                    type: string
+                    description: Array of included relationships. Please refer to the JSON API article
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: criteria
+                        id: 1
+                        attributes:
+                          name: brand
+                          priority: 1
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/criteria/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/criteria'
+                      prev: null
+                      self: 'https://api.restorit.fr/criteria'
+                      next: null
+                      last: 'https://api.restorit.fr/criteria'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      description: 'Return a collection of **criterion** resources.'
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      tags:
+        - Criteria
+  '/users/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: "User Id | 'me' | 'self'"
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Users
+      summary: Get user informations
+      description: "Retrieve informations from user's token if valid"
+      operationId: showUser
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResource'
+        '404':
+          description: User not found
+      security:
+        - bearerAuth: []
+    patch:
+      tags:
+        - Users
+      summary: Update user informations
+      description: Change user informations and visibilty of email and phone
+      operationId: patchUser
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResource'
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: User not found
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+  '/conversations/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Conversation Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Messages
+      summary: Get conversation
+      description: Retrieve conversation by id
+      operationId: showConversation
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Conversation not found
+      security:
+        - bearerAuth: []
+  '/messages/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Conversation Id
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags:
+        - Messages
+      summary: Edit a message
+      description: Edit a specific message
+      operationId: patchMessage
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResource'
+      security:
+        - bearerAuth: []
+  /evaluations:
+    post:
+      tags:
+        - Evaluations
+      summary: Store an evaluation
+      description: 'Create an **evaluation** resource.'
+      operationId: storeEvaluation
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - relationships
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - evaluations
+                    attributes:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+                          minLength: 1
+                          maxLength: 2048
+                        cost:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                        difficulty:
+                          type: integer
+                          minimum: 1
+                          maximum: 5
+                    relationships:
+                      type: object
+                      required:
+                        - article
+                      properties:
+                        article:
+                          type: object
+                          description: The article to link this evaluation to
+                          required:
+                            - data
+                          properties:
+                            data:
+                              type: object
+                              required:
+                                - type
+                                - id
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - articel
+                                id:
+                                  type: integer
+                included:
+                  type: string
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    attributes:
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                  included:
+                    type: array
+                    items: {}
+              examples:
+                Example:
+                  value:
+                    data:
+                      type: evaluations
+                      id: 1
+                      attributes:
+                        createdAt: '2020-02-02 00:0:00'
+                        updatedAt: '2020-02-02 00:0:00'
+                        comment: Maybe this is a problem in the graphic card...
+                        cost: 4
+                        difficulty: 1
+                      relationships: {}
+                      links:
+                        self: 'https://api.restorit.fr/evaluations/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+    get:
+      summary: Get a list of evaluations
+      operationId: indexEvaluations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Evaluation'
+                  links:
+                    type: string
+                  meta:
+                    type: string
+                  included:
+                    type: string
+              examples:
+                Example:
+                  value:
+                    data:
+                      - type: evaluations
+                        id: 1
+                        attributes:
+                          createdAt: '2020-02-02 00:0:00'
+                          updatedAt: '2020-02-02 00:0:00'
+                          comment: Maybe this is a problem in the graphic card...
+                          cost: 4
+                          difficulty: 1
+                        relationships: {}
+                        links:
+                          self: 'https://api.restorit.fr/evaluations/1'
+                        meta: {}
+                    links:
+                      first: 'https://api.restorit.fr/repairs'
+                      prev: null
+                      self: 'https://api.restorit.fr/repairs'
+                      next: null
+                      last: 'https://api.restorit.fr/repairs'
+                    meta:
+                      pageNumber: 1
+                      pageSize: 50
+                      size: 1
+                      totalSize: 1
+                      totalPage: 1
+                    included: []
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - Evaluations
+      description: 'Return a collection of **evaluation** resources.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+  '/articles/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Article Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Articles
+      summary: Get an article
+      description: 'Returns an **article** resource.'
+      operationId: showArticle
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Article'
+                  links:
+                    type: object
+                    description: Links related to the response
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+              examples:
+                Example:
+                  value:
+                    data:
+                      id: 1
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S broken
+                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                        price: 120
+                        broken: true
+                      links:
+                        self: 'https://api.restorit.fr/articles/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '404':
+          description: Article not found
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: ''
+    delete:
+      tags:
+        - Articles
+      summary: Delete an article
+      description: 'Delete an **article** resource.'
+      operationId: deleteArticle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    description: Metadata of the response
+                required:
+                  - meta
+              examples:
+                Example:
+                  value:
+                    meta: {}
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Article not found
+        '422':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResource'
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                include:
+                  type: object
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+        description: ''
+    parameters:
+      - schema:
+          type: integer
+          minimum: 1
+        name: id
+        in: path
+        description: ID of the resource
+        required: true
+    patch:
+      summary: Update an article
+      operationId: updateArticle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Article'
+                  links:
+                    type: object
+                    description: Links related to the resource
+                  meta:
+                    description: Metadata of the resource
+                    type: object
+                  included:
+                    type: array
+                    description: Array of included relationships. Please refer to the JSON API article
+                    items: {}
+                required:
+                  - data
+                  - links
+                  - meta
+                  - included
+              examples:
+                Example:
+                  value:
+                    data:
+                      id: 1
+                      type: articles
+                      atributes:
+                        createdAt: '2020-01-01 00:00:00'
+                        updatedAt: '2020-01-01 00:00:00'
+                        name: Selling an iPhone 7S broken
+                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                        price: 120
+                        broken: true
+                      links:
+                        self: 'https://api.restorit.fr/articles/1'
+                      meta: {}
+                    links: {}
+                    meta: {}
+                    included: []
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **article** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  description: ''
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      description: Type of the resource to update
+                      example: articles
+                      minLength: 1
+                    attributes:
+                      type: object
+                      description: ''
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the article
+                          example: Selling an iPhone 7S
+                          minLength: 1
+                          maxLength: 64
+                        comment:
+                          type: string
+                          example: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                          minLength: 1
+                          maxLength: 2048
+                          description: Details of the articles
+                        price:
+                          type: integer
+                          description: Price of the article
+                          example: 320
+                          minimum: 0
+                          maximum: 100000
+                    relationships:
+                      type: object
+                      description: ''
+                      properties:
+                        images:
+                          type: array
+                          description: Images linked to this article
+                          items:
+                            $ref: ../models/image.v1.yaml
+                        options:
+                          type: array
+                          description: Selected criterion options linked to this article
+                          items:
+                            $ref: ../models/option.v1.yaml
+                include:
+                  type: string
+                  description: Comma separated list of relationships to include. Please refer to the JSON API article
+                  minLength: 1
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    type: articles
+                    atributes:
+                      name: Selling an iPhone 7S broken
+                      comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
+                      price: 120
+                    relationships:
+                      image:
+                        - data:
+                            type: images
+                            id: 1
+                        - data:
+                            type: images
+                            id: 2
+                      options:
+                        - data:
+                            type: options
+                            id: 45
+                        - data:
+                            type: options
+                            id: 89
+      security:
+        - bearerAuth: []
+      tags:
+        - Articles
+  /articles:
     get:
       tags:
         - Articles
@@ -281,3212 +3050,8 @@ paths:
       security:
         - bearerAuth: []
     parameters: []
-  '/articles/{id}':
-    get:
-      tags:
-        - Articles
-      summary: Get an article
-      description: 'Returns an **article** resource.'
-      operationId: showArticle
-      parameters:
-        - name: articleId
-          in: path
-          description: Article Id
-          required: true
-          schema:
-            type: integer
-        - schema:
-            type: string
-            maxLength: 1
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: header
-      responses:
-        '200':
-          description: Success
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Article'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      id: 1
-                      type: articles
-                      atributes:
-                        createdAt: '2020-01-01 00:00:00'
-                        updatedAt: '2020-01-01 00:00:00'
-                        name: Selling an iPhone 7S broken
-                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
-                        price: 120
-                        broken: true
-                      links:
-                        self: 'https://api.restorit.fr/articles/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '404':
-          description: Article not found
-        '422':
-          description: Unprocessable Entity
-      requestBody:
-        description: ''
-    delete:
-      tags:
-        - Articles
-      summary: Delete an article
-      description: 'Delete an **article** resource.'
-      operationId: deleteArticle
-      parameters:
-        - name: articleId
-          in: path
-          description: Article Id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
-        '404':
-          description: Article not found
-        '422':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResource'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
-    parameters:
-      - schema:
-          type: integer
-          minimum: 1
-        name: id
-        in: path
-        description: ID of the resource
-        required: true
-    patch:
-      summary: Update an article
-      operationId: updateArticle
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Article'
-                  links:
-                    type: object
-                    description: Links related to the resource
-                  meta:
-                    description: Metadata of the resource
-                    type: object
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-                  - included
-              examples:
-                Example:
-                  value:
-                    data:
-                      id: 1
-                      type: articles
-                      atributes:
-                        createdAt: '2020-01-01 00:00:00'
-                        updatedAt: '2020-01-01 00:00:00'
-                        name: Selling an iPhone 7S broken
-                        comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
-                        price: 120
-                        broken: true
-                      links:
-                        self: 'https://api.restorit.fr/articles/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Update an **article** resource.'
-      parameters: []
-      requestBody:
-        description: ''
-        required: true
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  description: ''
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the resource to update
-                      example: articles
-                      minLength: 1
-                    attributes:
-                      type: object
-                      description: ''
-                      properties:
-                        title:
-                          type: string
-                          description: Title of the article
-                          example: Selling an iPhone 7S
-                          minLength: 1
-                          maxLength: 64
-                        comment:
-                          type: string
-                          example: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
-                          minLength: 1
-                          maxLength: 2048
-                          description: Details of the articles
-                        price:
-                          type: integer
-                          description: Price of the article
-                          example: '320'
-                          minimum: 0
-                          maximum: 100000
-                    relationships:
-                      type: object
-                      description: ''
-                      properties:
-                        images:
-                          type: array
-                          description: Images linked to this article
-                          items:
-                            $ref: ../models/image.v1.yaml
-                        options:
-                          type: array
-                          description: Selected criterion options linked to this article
-                          items:
-                            $ref: ../models/option.v1.yaml
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-                  minLength: 1
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: articles
-                    atributes:
-                      name: Selling an iPhone 7S broken
-                      comment: 'Hello, I am selling this iPhone 7S because the screen is broken. Please contact me by email. Thx ! :)'
-                      price: 120
-                    relationships:
-                      image:
-                        - data:
-                            type: images
-                            id: 1
-                        - data:
-                            type: images
-                            id: 2
-                      options:
-                        - data:
-                            type: options
-                            id: 45
-                        - data:
-                            type: options
-                            id: 89
-      security:
-        - bearerAuth: []
-      tags:
-        - Articles
-  '/users/{id}/articles':
-    get:
-      tags:
-        - Articles
-      summary: Get user articles
-      description: "Retrieve user's articles"
-      operationId: "App\\Http\\Controllers\\ArticlesController::getUserArticles"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchArticlesRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticlesCollectionResource'
-        '404':
-          description: User not found
-  '/users/{id}/sales':
-    get:
-      tags:
-        - Users
-      summary: Get user sales
-      description: "Retrieve user's sales"
-      operationId: "App\\Http\\Controllers\\ArticlesController::getUserSales"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchUserSalesRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticlesCollectionResource'
-        '402':
-          description: Not allowed
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-  '/users/{id}/purchases':
-    get:
-      tags:
-        - Users
-      summary: Get user purchases
-      description: "Retrieve user's purchases"
-      operationId: "App\\Http\\Controllers\\ArticlesController::getUserPurchases"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchUserPurchasesRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticlesCollectionResource'
-        '403':
-          description: Not allowed
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-  '/auth/login':
-    post:
-      tags:
-        - Authentication
-      summary: Login
-      description: Get access token for existing user
-      operationId: "App\\Http\\Controllers\\AuthController::login"
-      requestBody:
-        description: Data required to login
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Login'
-      responses:
-        '200':
-          description: Success
-        '401':
-          description: Invalid credentials
-        '422':
-          description: Unprocessable Entity
-  '/auth/logout':
-    get:
-      tags:
-        - Authentication
-      summary: Logout user
-      description: "Revoke user's token validity"
-      operationId: "App\\Http\\Controllers\\AuthController::logout"
-      responses:
-        '200':
-          description: Successfully logged out
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-  '/evaluations':
-    post:
-      tags:
-        - Evaluations
-      summary: Store an evaluation
-      description: 'Create an **evaluation** resource.'
-      operationId: storeEvaluation
-      requestBody:
-        description: ''
-        required: true
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                    - relationships
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - evaluations
-                    attributes:
-                      type: object
-                      properties:
-                        comment:
-                          type: string
-                          minLength: 1
-                          maxLength: 2048
-                        cost:
-                          type: integer
-                          minimum: 1
-                          maximum: 5
-                        difficulty:
-                          type: integer
-                          minimum: 1
-                          maximum: 5
-                    relationships:
-                      type: object
-                      required:
-                        - article
-                      properties:
-                        article:
-                          type: object
-                          description: The article to link this evaluation to
-                          required:
-                            - data
-                          properties:
-                            data:
-                              type: object
-                              required:
-                                - type
-                                - id
-                              properties:
-                                type:
-                                  type: string
-                                  enum:
-                                    - articel
-                                id:
-                                  type: integer
-                included:
-                  type: string
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: evaluations
-                    attributes:
-                      comment: Maybe this is a problem in the graphic card...
-                      cost: 4
-                      difficulty: 1
-                    relationships:
-                      article:
-                        data:
-                          type: articles
-                          id: 1
-      responses:
-        '201':
-          description: Created
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Evaluation'
-                  links:
-                    type: object
-                  meta:
-                    type: object
-                  included:
-                    type: array
-                    items: {}
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: evaluations
-                      id: 1
-                      attributes:
-                        createdAt: '2020-02-02 00:0:00'
-                        updatedAt: '2020-02-02 00:0:00'
-                        comment: Maybe this is a problem in the graphic card...
-                        cost: 4
-                        difficulty: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/evaluations/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
-        '422':
-          description: Unprocessable Entity
-      security:
-        - bearerAuth: []
-    parameters: []
-    get:
-      summary: Get a list of evaluations
-      operationId: indexEvaluations
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Evaluation'
-                  links:
-                    type: string
-                  meta:
-                    type: string
-                  included:
-                    type: string
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: evaluations
-                        id: 1
-                        attributes:
-                          createdAt: '2020-02-02 00:0:00'
-                          updatedAt: '2020-02-02 00:0:00'
-                          comment: Maybe this is a problem in the graphic card...
-                          cost: 4
-                          difficulty: 1
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/evaluations/1'
-                        meta: {}
-                    links:
-                      first: 'https://api.restorit.fr/repairs'
-                      prev: null
-                      self: 'https://api.restorit.fr/repairs'
-                      next: null
-                      last: 'https://api.restorit.fr/repairs'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '422':
-          description: Unprocessable Entity
-      tags:
-        - Evaluations
-      description: 'Return a collection of **evaluation** resources.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          description: Array of filter. Please refer to the JSON API article
-  '/users/{id}/evaluations':
-    get:
-      tags:
-        - Evaluations
-      summary: Get user evaluations
-      description: "Retrieve user's evaluations"
-      operationId: "App\\Http\\Controllers\\EvaluationsController::getUserEvaluations"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/SearchUserEvaluationsRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EvaluationsCollectionResource'
-        '404':
-          description: User not found
-  '/messages':
-    post:
-      tags:
-        - Messages
-      summary: Send a message
-      description: Send a message to a specific user
-      operationId: "App\\Http\\Controllers\\MessagesController::postMessage"
-      requestBody:
-        description: Data required to send a message
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostMessageRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResource'
-      security:
-        - bearerAuth: []
-  '/messages/{id}':
-    put:
-      tags:
-        - Messages
-      summary: Edit a message
-      description: Edit a specific message
-      operationId: "App\\Http\\Controllers\\MessagesController::updateMessage"
-      requestBody:
-        description: Data required to edit a message
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateMessageRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageResource'
-      security:
-        - bearerAuth: []
-  '/users/{id}/conversation':
-    get:
-      tags:
-        - Messages
-      summary: Get conversation with user
-      description: Retrieve conversation with a specific user
-      operationId: "App\\Http\\Controllers\\MessagesController::getConversationWithUser"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/GetConversationRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessagesCollectionResource'
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-  '/conversations/{id}':
-    get:
-      tags:
-        - Messages
-      summary: Get conversation
-      description: Retrieve conversation by id
-      operationId: "App\\Http\\Controllers\\MessagesController::getConversation"
-      parameters:
-        - name: conversationId
-          in: path
-          description: Conversation Id
-          required: true
-          schema:
-            type: integer
-        - name: filter
-          in: query
-          description: Filter parameters
-          required: false
-          schema:
-            $ref: '#/components/schemas/GetConversationRequest'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessagesCollectionResource'
-        '404':
-          description: Conversation not found
-      security:
-        - bearerAuth: []
-  '/conversations':
-    get:
-      tags:
-        - Conversations
-      summary: Get a list of conversations
-      description: 'Returns a collection of **conversation** resources.'
-      operationId: indexConversations
-      parameters:
-        - schema:
-            type: string
-            maxLength: 0
-            minLength: 1
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          example: 'filter[price][<=]=50'
-          description: Array of filter. Please refer to the JSON API article
-      responses:
-        '200':
-          description: Success
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Conversation'
-                  meta:
-                    type: object
-                    description: Metadata of the collection
-                  links:
-                    type: object
-                    description: Links related to the collection
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - meta
-                  - links
-                  - included
-        '422':
-          description: Unprocessable Entity
-        '401':
-          description: Not Authenticated
-      security:
-        - bearerAuth: []
-  '/users/{id}/block':
-    post:
-      tags:
-        - Messages
-      summary: Block user
-      description: Block messages from a given user
-      operationId: "App\\Http\\Controllers\\MessagesController::blockUser"
-      parameters:
-        - name: userId
-          in: path
-          description: User Id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResource'
-        '404':
-          description: User not found
-        '422':
-          description: Cet utilisateur est déjà bloqué
-      security:
-        - bearerAuth: []
-    delete:
-      tags:
-        - Messages
-      summary: Unblock user
-      description: Unblock messages from a given user
-      operationId: "App\\Http\\Controllers\\MessagesController::unblockUser"
-      parameters:
-        - name: userId
-          in: path
-          description: User Id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResource'
-        '404':
-          description: User not found
-        '422':
-          description: "Cet utilisateur n'est pas bloqué"
-      security:
-        - bearerAuth: []
-  '/users/{id}':
-    get:
-      tags:
-        - Users
-      summary: Get user informations
-      description: "Retrieve informations from user's token if valid"
-      operationId: "App\\Http\\Controllers\\UsersController::getUser"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResource'
-        '404':
-          description: User not found
-      security:
-        - bearerAuth: []
-    put:
-      tags:
-        - Users
-      summary: Update user informations
-      description: Change user informations and visibilty of email and phone
-      operationId: "App\\Http\\Controllers\\UsersController::updateUser"
-      parameters:
-        - name: userId
-          in: path
-          description: "User Id | 'me' | 'self'"
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Data required to update a user
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUser'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResource'
-        '401':
-          description: Not Authenticated
-        '403':
-          description: Not Allowed
-        '404':
-          description: User not found
-        '422':
-          description: Unprocessable Entity
-      security:
-        - bearerAuth: []
-  '/users':
-    post:
-      tags:
-        - Users
-      summary: Create User
-      description: Create a new user
-      operationId: "App\\Http\\Controllers\\UsersController::createUser"
-      requestBody:
-        description: Data required to create a user
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUser'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResource'
-        '422':
-          description: Unprocessable Entity
-  '/criteria':
-    post:
-      summary: Store a criterion
-      operationId: storeCriterion
-      tags:
-        - Criteria
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: ''
-        required: true
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                    - attributes
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the created resource
-                      enum:
-                        - criteria
-                    attributes:
-                      type: object
-                      required:
-                        - name
-                        - priority
-                      properties:
-                        name:
-                          type: string
-                          minLength: 1
-                          maxLength: 64
-                          description: Name of the criterion
-                        priority:
-                          type: string
-                          minLength: 0
-                          maxLength: 255
-                          description: Display priority of the criterion
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-              required:
-                - data
-            examples:
-              Example:
-                description: Here is an example of the body when setting up a selection criterion
-                value:
-                  data:
-                    type: criteria
-                    attributes:
-                      name: brand
-                      priority: 1
-      responses:
-        '201':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Criterion'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: criteria
-                      id: 1
-                      attributes:
-                        name: brand
-                        priority: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/criteria/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '422':
-          description: Unprocessable Entity
-      description: 'Create a **criterion** resource'
-    parameters: []
-    get:
-      summary: Get a list of criteria
-      operationId: indexCriteria
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Criterion'
-                  links:
-                    description: Links related to the response
-                    type: object
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    type: string
-                    description: Array of included relationships. Please refer to the JSON API article
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: criteria
-                        id: 1
-                        attributes:
-                          name: brand
-                          priority: 1
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/criteria/1'
-                        meta: {}
-                    links:
-                      first: 'https://api.restorit.fr/criteria'
-                      prev: null
-                      self: 'https://api.restorit.fr/criteria'
-                      next: null
-                      last: 'https://api.restorit.fr/criteria'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '422':
-          description: Unprocessable Entity
-      description: 'Return a collection of **criterion** resources.'
-      security:
-        - bearerAuth: []
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          description: Array of filter. Please refer to the JSON API article
-      tags:
-        - Criteria
-  '/criteria/{id}':
-    parameters:
-      - schema:
-          type: string
-        name: id
-        in: path
-        required: true
-    get:
-      summary: Get a criterion
-      operationId: showCriterion
-      tags:
-        - Criteria
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application.vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Criterion'
-                  links:
-                    description: Links related to the response
-                    type: object
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    type: string
-                    description: Array of included relationships. Please refer to the JSON API article
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  description: When showing a selection criterion
-                  value:
-                    data:
-                      type: criteria
-                      id: 1
-                      attributes:
-                        name: brand
-                        priority: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/criteria/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '404':
-          description: Model not found.
-        '422':
-          description: Invalid form.
-      description: 'Return a **criterion** resource.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-    patch:
-      summary: Update a criterion
-      operationId: updateCriterion
-      tags:
-        - Criteria
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: ''
-        required: true
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the updated resource
-                      enum:
-                        - criteria
-                    attributes:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: Name of the criterion
-                        priority:
-                          type: integer
-                          description: Display priority of the criterion
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-              required:
-                - data
-            examples:
-              Example:
-                description: When updating a selection criterion
-                value:
-                  data:
-                    type: criteria
-                    attributes:
-                      name: brand
-                      priority: 1
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Criterion'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  description: When updating a selection criterion
-                  value:
-                    data:
-                      type: criteria
-                      id: 1
-                      attributes:
-                        name: brand
-                        priority: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/criteria/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this.'
-        '403':
-          description: 'Access forbidden, you must be admin to access this.'
-        '404':
-          description: Model not found.
-        '422':
-          description: Invalid form.
-      description: 'Update a **criterion** resource.'
-    delete:
-      summary: Delete a criterion
-      operationId: deleteCriterion
-      tags:
-        - Criteria
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: A successful response
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '400':
-          description: Occurs when an article belongs to this criterion.
-        '401':
-          description: 'Unauthenticated, you must be authenticated to access this.'
-        '403':
-          description: 'Access forbidden, you must be admin to access this.'
-        '404':
-          description: Model not found.
-      description: 'Delete a **criterion** resource.'
-  '/breaks':
-    get:
-      summary: Get a list of breaks
-      tags:
-        - Break
-      responses:
-        '200':
-          description: OK
-          headers: {}
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Repair'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: breaks
-                        id: 1
-                        attributes:
-                          comment: The camera is not working anymore...
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/breaks/1'
-                        meta: {}
-                    links:
-                      first: 'https://api.restorit.fr/breaks'
-                      prev: null
-                      self: 'https://api.restorit.fr/breaks'
-                      next: null
-                      last: 'https://api.restorit.fr/breaks'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '422':
-          description: Unprocessable Entity
-      operationId: indexBreaks
-      description: 'Return a collection of **break** resources.'
-      parameters:
-        - schema:
-            type: string
-            maxLength: 0
-            minLength: 1
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-            minLength: 1
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          description: Array of filter. Please refer to the JSON API article
-      requestBody: {}
-    post:
-      summary: Store a break
-      tags:
-        - Break
-      responses:
-        '201':
-          description: Created
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Break'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    description: Array of included relationships. Please refer to the JSON API article
-                    type: array
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: breaks
-                      id: 1
-                      attributes:
-                        comment: The camera is not working anymore...
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/breaks/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '422':
-          description: Unprocessable Entity
-      operationId: storeBreaks
-      description: 'Create a **break** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  description: ''
-                  required:
-                    - type
-                    - attributes
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the created resource
-                      enum:
-                        - breaks
-                    attributes:
-                      type: object
-                      description: ''
-                      required:
-                        - comment
-                      properties:
-                        comment:
-                          type: string
-                          description: Details of the break
-                          minLength: 1
-                          maxLength: 2048
-                    relationships:
-                      type: object
-                      properties:
-                        author:
-                          description: Author linked to this break
-                          type: object
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-                  minLength: 1
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: breaks
-                    attributes:
-                      comment: The camera is not working anymore...
-        description: ''
-    parameters: []
-  '/breaks/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: ID of the resource
-    get:
-      summary: Get a break
-      tags:
-        - Break
-      responses:
-        '200':
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Break'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: breaks
-                      id: 1
-                      attributes:
-                        comment: The camera is not working anymore...
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/breaks/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-          description: OK
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: showBreak
-      description: 'Return a **break** resource.'
-      parameters:
-        - schema:
-            type: string
-            minLength: 1
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-    patch:
-      summary: Update a break
-      tags:
-        - Break
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Break'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: breaks
-                      id: 1
-                      attributes:
-                        comment: The camera is not working anymore...
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/breaks/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: updateBreak
-      description: 'Update a **break** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - breaks
-                      description: Type of the updated resource
-                    attributes:
-                      type: object
-                      properties:
-                        comment:
-                          type: string
-                          description: Details of the break
-                          minLength: 1
-                          maxLength: 2048
-                    relationships:
-                      type: object
-                      properties:
-                        author:
-                          type: object
-                          description: Author linked to this break
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-                  minLength: 1
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: breaks
-                    attributes:
-                      comment: The camera is not working anymore...
-        description: ''
-    delete:
-      summary: Delete a break
-      tags:
-        - Break
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: deleteBreak
-      description: 'Delete a **break** resource.'
-      requestBody: {}
-      security:
-        - bearerAuth: []
-      parameters: []
-  '/repairs':
-    get:
-      summary: Get a list of repairs
-      tags:
-        - Repairs
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Repair'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    description: Array of included relationships. Please refer to the JSON API article
-                    type: array
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: repairs
-                        id: 1
-                        attributes:
-                          comment: "I changed the broken screen and now it's ok !"
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/repairs/1'
-                        meta: {}
-                    links:
-                      first: 'https://api.restorit.fr/repairs'
-                      prev: null
-                      self: 'https://api.restorit.fr/repairs'
-                      next: null
-                      last: 'https://api.restorit.fr/repairs'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '422':
-          description: Unprocessable Entity
-      operationId: indexRepairs
-      description: 'Return a collection of **repair** resources.'
-      parameters:
-        - schema:
-            type: string
-            minLength: 0
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          description: Array of filter. Please refer to the JSON API article
-    parameters: []
-    post:
-      summary: Store a repair
-      operationId: storeRepair
-      responses:
-        '201':
-          description: Created
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Repair'
-                  links:
-                    description: Links related to the response
-                    type: object
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: repairs
-                        id: 1
-                        attributes:
-                          comment: "I changed the broken screen and now it's ok !"
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/repairs/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '422':
-          description: Unprocessable Entity
-      description: 'Create a **repair** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                    - attributes
-                    - relationships
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - repairs
-                      description: Type of the created resource
-                    attributes:
-                      type: object
-                      required:
-                        - comment
-                      properties:
-                        comment:
-                          type: string
-                          minLength: 1
-                          maxLength: 2048
-                          description: Details of the repair
-                    relationships:
-                      type: object
-                      required:
-                        - break
-                      properties:
-                        break:
-                          type: object
-                          description: Break that this repair refers to
-                          required:
-                            - data
-                          properties:
-                            data:
-                              type: object
-                              required:
-                                - type
-                                - id
-                              properties:
-                                type:
-                                  type: string
-                                  enum:
-                                    - breaks
-                                  description: Type of the resource to link
-                                id:
-                                  type: integer
-                                  description: ID of the break resource to link
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-                  minLength: 0
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    - type: repairs
-                      attributes:
-                        comment: "I changed the broken screen and now it's ok !"
-                      relationships:
-                        break:
-                          data:
-                            type: breaks
-                            id: 1
-        description: ''
-      tags:
-        - Repairs
-  '/repairs/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: ID of the resource
-    get:
-      summary: Get a repair
-      tags:
-        - Repairs
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  links:
-                    description: Links related to the response
-                    type: object
-                  data:
-                    $ref: '#/components/schemas/Repair'
-                required:
-                  - meta
-                  - links
-                  - data
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: repairs
-                        id: 1
-                        attributes:
-                          comment: "I changed the broken screen and now it's ok !"
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/repairs/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: showRepair
-      description: 'Return a **repair** resource.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-    patch:
-      summary: Update a repair
-      operationId: updateRepair
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Repair'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: repairs
-                        id: 1
-                        attributes:
-                          comment: "I changed the broken screen and now it's ok !"
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/repairs/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Update a **repair** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the updated resource
-                    attributes:
-                      type: object
-                      properties:
-                        comment:
-                          type: string
-                          description: Details of the repair
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    - type: repairs
-                      attributes:
-                        comment: "I changed the broken screen and now it's ok !"
-        description: ''
-      tags:
-        - Repairs
-    delete:
-      summary: Delete a repair
-      operationId: deleteRepair
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Delete a **repair** resource'
-      security:
-        - bearerAuth: []
-      tags:
-        - Repairs
-  '/options':
-    get:
-      summary: Get a list of options
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Option'
-                  links:
-                    description: Links related to the response
-                    type: object
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    description: Array of included relationships. Please refer to the JSON API article
-                    type: array
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: options
-                        id: 1
-                        attributes:
-                          name: Apple
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/options/1'
-                        meta: {}
-                    links:
-                      first: 'https://api.restorit.fr/criteria'
-                      prev: null
-                      self: 'https://api.restorit.fr/criteria'
-                      next: null
-                      last: 'https://api.restorit.fr/criteria'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '422':
-          description: Unprocessable Entity
-      operationId: indexOptions
-      description: 'Return a collection of **option** resources.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-        - schema:
-            type: string
-          in: query
-          name: sort
-          description: Comma separated list of fields to sort. Please refer to the JSON API article
-        - schema:
-            type: array
-          in: query
-          name: filter
-          description: Array of filter. Please refer to the JSON API article
-      tags:
-        - Options
-    parameters: []
-    post:
-      summary: Store an option
-      operationId: storeOption
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Criterion'
-                  links:
-                    description: Links related to the response
-                    type: object
-                  meta:
-                    description: Metadata of the response
-                    type: object
-                  included:
-                    description: Array of included relationships. Please refer to the JSON API article
-                    type: array
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: options
-                        id: 1
-                        attributes:
-                          name: Apple
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/options/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '422':
-          description: Unprocessable Entity
-      description: 'Create an **option** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                    - attributes
-                    - relationships
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the created resource
-                      enum:
-                        - options
-                    attributes:
-                      type: object
-                      required:
-                        - name
-                      properties:
-                        name:
-                          type: string
-                          description: Name of the option
-                          minLength: 1
-                          maxLength: 64
-                    relationships:
-                      type: object
-                      required:
-                        - criterion
-                      properties:
-                        criterion:
-                          type: object
-                          required:
-                            - data
-                          description: Parent criterion to link
-                          properties:
-                            data:
-                              type: object
-                              required:
-                                - type
-                                - id
-                              properties:
-                                type:
-                                  type: string
-                                  description: Type of resource
-                                  enum:
-                                    - criteria
-                                id:
-                                  type: integer
-                                  description: ID of the resource
-                        parents:
-                          type: object
-                          description: Parent options
-                          properties:
-                            data:
-                              type: object
-                              properties:
-                                type:
-                                  type: string
-                                  description: Type of resource
-                                  enum:
-                                    - options
-                                id:
-                                  type: integer
-                                  description: ID of the resource
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: options
-                    attributes:
-                      name: Apple
-                    relationships:
-                      criterion:
-                        data:
-                          type: criteria
-                          id: 1
-                      parents:
-                        data:
-                          - type: options
-                            id: 2
-      tags:
-        - Options
-  '/options/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: ID of the resource
-    get:
-      summary: Get an option
-      tags:
-        - Options
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Criterion'
-                  links:
-                    type: object
-                    description: Links related to the response
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: options
-                        id: 1
-                        attributes:
-                          name: Apple
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/options/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: showOption
-      description: 'Return an **option** resource.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: include
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-    patch:
-      summary: Update an option
-      operationId: updateOption
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Option'
-                  links:
-                    type: string
-                    description: Links related to the response
-                  meta:
-                    type: string
-                    description: Metadata of the response
-                  included:
-                    type: array
-                    description: Array of included relationships. Please refer to the JSON API article
-                    items: {}
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: options
-                        id: 1
-                        attributes:
-                          name: Apple
-                        relationships: {}
-                        links:
-                          self: 'https://api.restorit.fr/options/1'
-                        meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Update an **option** resource.'
-      tags:
-        - Options
-      parameters: []
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - options
-                      description: Type of the updated resource
-                    attributes:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          minLength: 1
-                          maxLength: 64
-                          description: Name of the option
-                    relationships:
-                      type: object
-                      properties:
-                        criterion:
-                          type: object
-                          description: Parent criterion to link
-                          properties:
-                            data:
-                              type: object
-                              properties:
-                                type:
-                                  type: string
-                                  description: Type of resource
-                                  enum:
-                                    - criteria
-                                id:
-                                  type: integer
-                                  description: ID of the resource
-                        parents:
-                          type: object
-                          description: Parent options
-                          properties:
-                            data:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  type:
-                                    type: string
-                                    description: Type of resource
-                                  id:
-                                    type: integer
-                                    description: ID of the resource
-                include:
-                  type: string
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-              required:
-                - data
-    delete:
-      summary: Delete an option
-      operationId: deleteOption
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                    description: Metadata of the response
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Options
-      description: 'Delete an **option** resource.'
-      security:
-        - bearerAuth: []
-  '/evaluations/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: ID of the resource
-    get:
-      summary: Get an evaluation
-      tags:
-        - Evaluations
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Evaluation'
-                  links:
-                    type: string
-                  meta:
-                    type: string
-                  included:
-                    type: string
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: evaluations
-                      id: 1
-                      attributes:
-                        createdAt: '2020-02-02 00:0:00'
-                        updatedAt: '2020-02-02 00:0:00'
-                        comment: Maybe this is a problem in the graphic card...
-                        cost: 4
-                        difficulty: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/evaluations/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: showEvaluation
-      description: 'Returns an **evaluation** resource.'
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: includes
-          description: Comma separated list of relationships to include. Please refer to the JSON API article
-    patch:
-      summary: Update an evaluation
-      operationId: updateEvaluation
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Evaluation'
-                  links:
-                    type: object
-                  meta:
-                    type: object
-                  included:
-                    type: array
-                    items: {}
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: evaluations
-                      id: 1
-                      attributes:
-                        createdAt: '2020-02-02 00:0:00'
-                        updatedAt: '2020-02-02 00:0:00'
-                        comment: Maybe this is a problem in the graphic card...
-                        cost: 4
-                        difficulty: 1
-                      relationships: {}
-                      links:
-                        self: 'https://api.restorit.fr/evaluations/1'
-                      meta: {}
-                    links: {}
-                    meta: {}
-                    included: []
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Update an **evaluation** resource.'
-      parameters: []
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                included:
-                  type: string
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - evaluations
-                    attributes:
-                      type: object
-                      properties:
-                        comment:
-                          type: string
-                          minLength: 1
-                          maxLength: 2048
-                        cost:
-                          type: integer
-                          minimum: 1
-                          maximum: 5
-                        difficulty:
-                          type: integer
-                          minimum: 1
-                          maximum: 5
-                    relationships:
-                      type: object
-                      properties:
-                        article:
-                          type: object
-                          description: The article to link this evaluation to
-                          properties:
-                            data:
-                              type: object
-                              properties:
-                                type:
-                                  type: string
-                                  enum:
-                                    - articel
-                                id:
-                                  type: integer
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: evaluations
-                    attributes:
-                      comment: Maybe this is a problem in the graphic card...
-                      cost: 4
-                      difficulty: 1
-        description: ''
-        required: true
-      tags:
-        - Evaluations
-    delete:
-      summary: Delete an evaluation
-      operationId: deleteEvaluation
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Evaluations
-      description: 'Delete an **article** resource.'
-      security:
-        - bearerAuth: []
-  '/negociations':
-    get:
-      summary: Get a list of negociations
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Negociation'
-                  links:
-                    type: object
-                  meta:
-                    type: object
-                required:
-                  - data
-                  - links
-                  - meta
-              examples:
-                Example:
-                  value:
-                    data:
-                      - type: negociations
-                        id: 1
-                        attributes:
-                          price: 130
-                        links:
-                          self: 'https://api.restorit.fr/negociations/1'
-                    links:
-                      first: 'https://api.restorit.fr/negociations'
-                      prev: null
-                      self: 'https://api.restorit.fr/negociations'
-                      next: null
-                      last: 'https://api.restorit.fr/negociations'
-                    meta:
-                      pageNumber: 1
-                      pageSize: 50
-                      size: 1
-                      totalSize: 1
-                      totalPage: 1
-                    included: []
-        '401':
-          description: Unauthorized
-        '422':
-          description: Unprocessable Entity
-      operationId: indexNegociations
-      description: 'Return a collection of **negociation** resources.'
-      parameters: []
-      security:
-        - bearerAuth: []
-    parameters: []
-    post:
-      summary: Store a negociation
-      operationId: storeNegociation
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Negociation'
-                required:
-                  - data
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: negociations
-                      id: 1
-                      attributes:
-                        price: 130
-                      links:
-                        self: 'https://api.restorit.fr/negociations/1'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '422':
-          description: Unprocessable Entity
-      description: 'Create a **negociation** resource.'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                    - relationships
-                  properties:
-                    type:
-                      type: string
-                      description: Type of the created resource
-                      enum:
-                        - negociations
-                    attributes:
-                      type: object
-                      properties:
-                        price:
-                          type: number
-                          minimum: 0
-                          maximum: 100000
-                          description: The price proposed for this article
-                      required:
-                        - price
-                    relationships:
-                      type: object
-                      required:
-                        - article
-                        - message
-                      properties:
-                        article:
-                          required:
-                            - data
-                          description: The negociated article
-                          type: object
-                          properties:
-                            data:
-                              type: object
-                              required:
-                                - type
-                                - id
-                              properties:
-                                type:
-                                  type: string
-                                  enum:
-                                    - articles
-                                id:
-                                  type: integer
-                        message:
-                          description: An optional message to link to this negociation
-                          type: object
-                          properties:
-                            data:
-                              type: object
-                              properties:
-                                type:
-                                  type: string
-                                  enum:
-                                    - messages
-                                id:
-                                  type: integer
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: negociations
-                    attributes:
-                      price: 130
-                    relationships:
-                      article:
-                        data:
-                          type: articles
-                          id: 1
-        description: ''
-  '/negociations/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: ID of the resource
-    get:
-      summary: Get a negociation
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Negociation'
-                required:
-                  - data
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: negociations
-                      id: 1
-                      attributes:
-                        price: 130
-                      links:
-                        self: 'https://api.restorit.fr/negociations/1'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      operationId: showNegociation
-      description: 'Return a **negociation** resource'
-      security:
-        - bearerAuth: []
-    patch:
-      summary: Update a negociation
-      operationId: updateNegociation
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Evaluation'
-                required:
-                  - data
-              examples:
-                Example:
-                  value:
-                    data:
-                      type: negociations
-                      id: 1
-                      attributes:
-                        price: 130
-                      links:
-                        self: 'https://api.restorit.fr/negociations/1'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties: {}
-      description: 'Update a **negociation** resource'
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-                  required:
-                    - type
-                  properties:
-                    type:
-                      type: string
-                      description: 'The value must be **negociations**'
-                    attributes:
-                      type: object
-                      properties:
-                        price:
-                          type: string
-                          description: The price proposed for this article
-              required:
-                - data
-            examples:
-              Example:
-                value:
-                  data:
-                    type: negociations
-                    attributes:
-                      price: 130
-    delete:
-      summary: Delete a negociation
-      operationId: deleteNegociation
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.api+json:
-              schema:
-                type: object
-                properties:
-                  meta:
-                    type: object
-                required:
-                  - meta
-              examples:
-                Example:
-                  value:
-                    meta: {}
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '422':
-          description: Unprocessable Entity
-      description: 'Delete a **negociation** resource'
-      security:
-        - bearerAuth: []
 components:
   schemas:
-    Login:
-      title: Login payload
-      required:
-        - email
-        - password
-        - remember_me
-      properties:
-        email:
-          description: Email
-          type: string
-        password:
-          description: Password
-          type: string
-        remember_me:
-          description: Add 1 week to token expiration date if true
-          type: boolean
-      type: object
-    GetConversationRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - title: Get conversation with user filters
-          properties:
-            search:
-              description: Content to search in message text
-              type: string
-          type: object
-    GetConversationsRequest:
-      allOf:
-        - $ref: '#/components/schemas/PaginationRequest'
-        - title: Get Conversations Filters
-          properties:
-            search:
-              description: 'Content to search in message text, display_name of correspondent'
-              type: string
-              example: ''
-          type: object
-    PostMessageRequest:
-      title: Message POST payload
-      required:
-        - text
-        - receiver_id
-      properties:
-        text:
-          description: 'Text (max:2048)'
-          type: string
-        receiver_id:
-          description: Id of the receiver
-          type: integer
-      type: object
-    UpdateMessageRequest:
-      title: Message PUT payload
-      required:
-        - text
-      properties:
-        text:
-          description: 'Text (max:2048)'
-          type: string
-      type: object
-    CreateUser:
-      title: User POST payload
-      required:
-        - name
-        - display_name
-        - email
-        - phone
-        - show_phone
-        - show_email
-        - password
-        - password_confirmation
-      properties:
-        name:
-          description: Fullname or pseudo
-          type: string
-        display_name:
-          description: Display Name
-          type: string
-        email:
-          description: Email
-          type: string
-        show_email:
-          description: If you want other users to see your email
-          type: boolean
-          default: 'false'
-        phone:
-          description: Phone number
-          type: string
-        show_phone:
-          description: If you want other users to see your phone number
-          type: boolean
-          default: 'false'
-        password:
-          description: Password
-          type: string
-        password_confirmation:
-          description: Password confirmation
-          type: string
-      type: object
-    UpdateUser:
-      title: User PUT payload
-      required:
-        - name
-        - display_name
-        - email
-        - phone
-        - show_phone
-        - show_email
-      properties:
-        name:
-          description: Fullname or pseudo
-          type: string
-        display_name:
-          description: Display Name
-          type: string
-        email:
-          description: Email
-          type: string
-        show_email:
-          description: If you want other users to see your email
-          type: boolean
-          default: 'false'
-        phone:
-          description: Phone number
-          type: string
-        show_phone:
-          description: If you want other users to see your phone number
-          type: boolean
-          default: 'false'
-        password:
-          description: New Password
-          type: string
-        password_confirmation:
-          description: New Password confirmation
-          type: string
-        current_password:
-          description: Current password (required if email has changed or new password set)
-          type: string
-      type: object
-    ConversationResource:
-      title: Last Message Resource
-      properties:
-        id:
-          description: Message id
-          type: integer
-        created_at:
-          description: article creation time
-          type: string
-          format: date-time
-        updated_at:
-          description: article update time
-          type: string
-          format: date-time
-        text:
-          description: Text
-          type: string
-        correspondent:
-          description: Message correspondent
-          type: object
-          $ref: '#/components/schemas/UserResource'
-        message_author:
-          description: Last Message author id
-          type: integer
-      type: object
-    ConversationsCollectionResource:
-      allOf:
-        - $ref: '#/components/schemas/PaginationResource'
-        - title: Last Messages Collection Resource
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/ConversationResource'
-          type: object
     ImageResource:
       title: Image Resource
       properties:
@@ -3529,16 +3094,6 @@ components:
           description: Message sender id
           type: integer
       type: object
-    MessagesCollectionResource:
-      allOf:
-        - $ref: '#/components/schemas/PaginationResource'
-        - title: Messages Collection Resource
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/MessageResource'
-          type: object
     UserResource:
       title: User Resource
       properties:
@@ -3805,7 +3360,7 @@ components:
         id:
           type: integer
           description: ID of the resource
-          example: '42'
+          example: 42
         attributes:
           type: object
           required:
@@ -4060,4 +3615,4 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      scheme: Bearer
+      scheme: bearer
