@@ -1413,8 +1413,336 @@ paths:
         - bearerAuth: []
       tags:
         - Articles
+  '/users':
+    post:
+      tags:
+        - Users
+      summary: Store a User
+      description: 'Create a **user** resource.'
+      operationId: storeUser
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        '422':
+          description: Unprocessable Entity
+    parameters: []
+  '/users/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Users 
+      summary: Get user informations
+      description: 'Returns a **user** resource.'
+      operationId: showUser
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        '404':
+          description: User not found
+        '422':
+          description: Unprocessable Entity
+    patch:
+      summary: Update user informations
+      operationId: updateUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **user** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+  '/login':
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Get access token for existing user
+      operationId: login
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResource'
+        '401':
+          description: Invalid credentials
+        '422':
+          description: Unprocessable Entity
 components:
   schemas:
+    AuthRequest:
+      title: Auth Request
+      type: object
+      description: 'This resource represents a login request.'
+      x-tags:
+        - Authentication
+      properties:
+        email:
+          type: email
+          example: 'john.smith@gmail.com'
+        password:
+          type: string
+          example: "thisisapassword"
+      required:
+        - email
+        - password
+    TokenResource:
+      title: Token Resource
+      type: object
+      properties:
+        accessToken:
+          description: Access token to use for authentication
+          type: string
+        tokenType:
+          description: Token type
+          type: string
+          example: "Bearer"
+        expiresIn:
+          description: Expiration Date (TTL)
+          type: string
+    UserRequest:
+      title: User Request
+      type: object
+      description: 'This resource represents a user in the marketplace.'
+      x-tags:
+        - Users
+      properties:
+        type:
+          type: string
+          example: 'users'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - name
+            - email
+            - password
+          properties:
+            name:
+              type: string
+              description: 'Name of the user'
+              example: 'John Smith'
+              minLength: 1
+              maxLength: 64
+            displayName:
+              type: string
+              description: 'Display Name of the user'
+              example: 'Johnny'
+              minLength: 1
+              maxLength: 64
+            email:
+              type: email
+              description: 'Email of the user'
+              example: 'john.smith@gmail.com'
+              minLength: 1
+              maxLength: 256
+            showEmail:
+              type: boolean
+              description: 'If the user want to dislay his email'
+              example: false
+            phone:
+              type: string
+              description: 'Phone number of the user'
+              example: '+33612345678'          
+            showPhone:
+              type: boolean
+              description: 'If the user want to dislay his phone'
+              example: false
+            password:
+              type: string
+              description: 'Password of the user'
+              example: 'thisisapassword'     
+              minLength: 8
+              maxLength: 256   
+            passwordConfirmation:
+              type: string
+              description: 'Password of the user repeated (required for the first set of the password and each time the user want to change the mail or the current password'
+              example: 'thisisapassword'     
+              minLength: 8
+              maxLength: 256        
+        relationships:
+          type: object
+          properties:
+            avatar: 
+              $ref: '#/components/schemas/ResourceIdentifier'
+            address:
+              $ref: '#/components/schemas/ResourceIdentifier'
+            articles:
+              $ref: '#/components/schemas/ResourceIdentifierArray'
+            evaluations:
+              $ref: '#/components/schemas/ResourceIdentifierArray'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes    
+    UserResponse:
+      title: User Response
+      type: object
+      description: 'This resource represents a user in the marketplace.'
+      x-tags:
+        - Users
+      properties:
+        data:
+          $ref: "#/components/schemas/UserResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    UsersResponse:
+      title: Users Response
+      type: array
+      items:
+        $ref: "#/components/schemas/UserResource"
+      x-tags:
+        - Users
+    UserResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: 'users'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: 'Name of the user'
+              example: 'John Smith'
+              minLength: 1
+              maxLength: 64
+            displayName:
+              type: string
+              description: 'Display Name of the user'
+              example: 'Johnny'
+              minLength: 1
+              maxLength: 64
+            email:
+              type: email
+              description: 'Email of the user'
+              example: 'john.smith@gmail.com'
+              minLength: 1
+              maxLength: 256
+            showEmail:
+              type: boolean
+              description: 'If the user want to dislay his email'
+              example: false
+            phone:
+              type: string
+              description: 'Phone number of the user'
+              example: '+33612345678'          
+            showPhone:
+              type: boolean
+              description: 'If the user want to dislay his phone'
+              example: false
+            password:
+              type: string
+              description: 'Password of the user'
+              example: 'thisisapassword'     
+              minLength: 8
+              maxLength: 256   
+            passwordConfirmation:
+              type: string
+              description: 'Password of the user repeated (required for the first set of the password and each time the user want to change the mail or the current password'
+              example: 'thisisapassword'     
+              minLength: 8
+              maxLength: 256        
+        relationships:
+          type: object
+          properties:
+            avatar: 
+              $ref: '#/components/schemas/RelationshipObject'
+            address:
+              $ref: '#/components/schemas/RelationshipObject'
+            articles:
+              $ref: '#/components/schemas/RelationshipObject'
+            evaluations:
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
     ArticleRequest:
       title: Article Request
       type: object
