@@ -154,16 +154,6 @@ paths:
           description: Negociation not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -340,16 +330,6 @@ paths:
           description: Evaluation not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -537,16 +517,6 @@ paths:
           description: Option not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -729,16 +699,6 @@ paths:
           description: Repair not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -913,16 +873,6 @@ paths:
           description: Break not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -1099,16 +1049,6 @@ paths:
           description: Article not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -1340,16 +1280,6 @@ paths:
           description: Article not found
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/vnd.api+json:
-            schema:
-              type: object
-              properties:
-                include:
-                  type: object
-                  description: Comma separated list of relationships to include. Please refer to the JSON API article
-        description: ''
       parameters:
         - schema:
             type: integer
@@ -1534,7 +1464,8 @@ components:
         - Authentication
       properties:
         email:
-          type: email
+          type: string
+          format: email
           example: 'john.smith@gmail.com'
         password:
           type: string
@@ -1594,7 +1525,8 @@ components:
                   minLength: 1
                   maxLength: 64
                 email:
-                  type: email
+                  type: string
+                  format: email
                   description: 'Email of the user'
                   example: 'john.smith@gmail.com'
                   minLength: 1
@@ -1700,7 +1632,8 @@ components:
               minLength: 1
               maxLength: 64
             email:
-              type: email
+              type: string
+              format: email
               description: 'Email of the user'
               example: 'john.smith@gmail.com'
               minLength: 1
