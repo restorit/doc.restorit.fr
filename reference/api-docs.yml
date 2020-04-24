@@ -1901,6 +1901,9 @@ components:
           $ref: '#/components/schemas/MetaDataObject'
         included:
           type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/OptionResource"
           description: Array of included relationships. Please refer to the JSON API article
       required:
         - data
