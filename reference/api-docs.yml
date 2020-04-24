@@ -1563,82 +1563,87 @@ components:
       x-tags:
         - Users
       properties:
-        type:
-          type: string
-          example: 'users'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
+          properties:
+            type:
+              type: string
+              example: 'users'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the user'
+                  example: 'John Smith'
+                  minLength: 1
+                  maxLength: 64
+                displayName:
+                  type: string
+                  description: 'Display Name of the user'
+                  example: 'Johnny'
+                  minLength: 1
+                  maxLength: 64
+                email:
+                  type: email
+                  description: 'Email of the user'
+                  example: 'john.smith@gmail.com'
+                  minLength: 1
+                  maxLength: 256
+                showEmail:
+                  type: boolean
+                  description: 'If the user want to dislay his email'
+                  example: false
+                phone:
+                  type: string
+                  description: 'Phone number of the user'
+                  example: '+33612345678'          
+                showPhone:
+                  type: boolean
+                  description: 'If the user want to dislay his phone'
+                  example: false
+                password:
+                  type: string
+                  description: 'Password of the user'
+                  example: 'thisisapassword'     
+                  minLength: 8
+                  maxLength: 256   
+                passwordConfirmation:
+                  type: string
+                  description: 'Password of the user repeated (required for the first set of the password and each time the user want to change the mail or the current password'
+                  example: 'thisisapassword'     
+                  minLength: 8
+                  maxLength: 256        
+            relationships:
+              type: object
+              properties:
+                avatar: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                address:
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                articles:
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+                evaluations:
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
           required:
-            - name
-            - email
-            - password
-          properties:
-            name:
-              type: string
-              description: 'Name of the user'
-              example: 'John Smith'
-              minLength: 1
-              maxLength: 64
-            displayName:
-              type: string
-              description: 'Display Name of the user'
-              example: 'Johnny'
-              minLength: 1
-              maxLength: 64
-            email:
-              type: email
-              description: 'Email of the user'
-              example: 'john.smith@gmail.com'
-              minLength: 1
-              maxLength: 256
-            showEmail:
-              type: boolean
-              description: 'If the user want to dislay his email'
-              example: false
-            phone:
-              type: string
-              description: 'Phone number of the user'
-              example: '+33612345678'          
-            showPhone:
-              type: boolean
-              description: 'If the user want to dislay his phone'
-              example: false
-            password:
-              type: string
-              description: 'Password of the user'
-              example: 'thisisapassword'     
-              minLength: 8
-              maxLength: 256   
-            passwordConfirmation:
-              type: string
-              description: 'Password of the user repeated (required for the first set of the password and each time the user want to change the mail or the current password'
-              example: 'thisisapassword'     
-              minLength: 8
-              maxLength: 256        
-        relationships:
-          type: object
-          properties:
-            avatar: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            address:
-              $ref: '#/components/schemas/ResourceIdentifier'
-            articles:
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-            evaluations:
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+            - type
+            - relationships
+            - attributes    
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     UserResponse:
       title: User Response
       type: object
@@ -1750,62 +1755,67 @@ components:
       x-tags:
         - Articles
       properties:
-        type:
-          type: string
-          example: 'articles'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
+          properties:
+            type:
+              type: string
+              example: 'articles'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - title
+                - comment
+                - price
+              properties:
+                title:
+                  type: string
+                  description: 'Title of the article'
+                  example: 'I sell an iPhone 7S'
+                  minLength: 1
+                  maxLength: 64
+                comment:
+                  type: string
+                  description: 'More details about the article'
+                  example: 'I only want to be contacted by email. Thanks.'
+                  minLength: 1
+                  maxLength: 2048
+                price:
+                  type: number
+                  description: 'Price of the article'
+                  example: 32
+                  minimum: 0
+                  maximum: 100000
+            relationships:
+              type: object
+              properties:
+                options: 
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+                event:
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                images:
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+                evaluations:
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+                sale:
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                negociations:
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
           required:
-            - title
-            - comment
-            - price
-          properties:
-            title:
-              type: string
-              description: 'Title of the article'
-              example: 'I sell an iPhone 7S'
-              minLength: 1
-              maxLength: 64
-            comment:
-              type: string
-              description: 'More details about the article'
-              example: 'I only want to be contacted by email. Thanks.'
-              minLength: 1
-              maxLength: 2048
-            price:
-              type: number
-              description: 'Price of the article'
-              example: 32
-              minimum: 0
-              maximum: 100000
-        relationships:
-          type: object
-          properties:
-            options: 
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-            event:
-              $ref: '#/components/schemas/ResourceIdentifier'
-            images:
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-            evaluations:
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-            sale:
-              $ref: '#/components/schemas/ResourceIdentifier'
-            negociations:
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+            - type
+            - relationships
+            - attributes
       required:
-        - type
-        - relationships
-        - attributes    
+        - data    
     ArticleResponse:
       title: Article Response
       type: object
@@ -1899,45 +1909,50 @@ components:
       x-tags:
         - Criteria
       properties:
-        type:
-          type: string
-          example: 'criteria'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
+          properties:
+            type:
+              type: string
+              example: 'criteria'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - name
+                - priority
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the criterion'
+                  example: 'brand'
+                  minLength: 1
+                  maxLength: 64
+                priority:
+                  type: string
+                  description: 'Display priority of the criterion'
+                  example: '1'
+                  minLength: 0
+                  maxLength: 255
+            relationships:
+              type: object
+              properties:
+                options: 
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
           required:
-            - name
-            - priority
-          properties:
-            name:
-              type: string
-              description: 'Name of the criterion'
-              example: 'brand'
-              minLength: 1
-              maxLength: 64
-            priority:
-              type: string
-              description: 'Display priority of the criterion'
-              example: '1'
-              minLength: 0
-              maxLength: 255
-        relationships:
-          type: object
-          properties:
-            options: 
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+            - type
+            - relationships
+            - attributes    
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     CriterionResponse:
       title: Criterion Response
       type: object
@@ -2014,40 +2029,45 @@ components:
       x-tags:
         - Breaks
       properties:
-        type:
-          type: string
-          example: 'breaks'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
-          required:
-            - comment
           properties:
-            comment:
+            type:
               type: string
-              description: 'Comment giving the details of the breakage'
-              example: 'The window is broken and needs a replacement'
-              minLength: 1
-              maxLength: 2048
-        relationships:
-          type: object
-          properties:
-            article: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            author: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+              example: 'breaks'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  description: 'Comment giving the details of the breakage'
+                  example: 'The window is broken and needs a replacement'
+                  minLength: 1
+                  maxLength: 2048
+            relationships:
+              type: object
+              properties:
+                article: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                author: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes    
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     BreakResponse:
       title: Break Response
       type: object
@@ -2119,40 +2139,45 @@ components:
       x-tags:
         - Repairs
       properties:
-        type:
-          type: string
-          example: 'repairs'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
-          required:
-            - comment
           properties:
-            comment:
+            type:
               type: string
-              description: 'Details of the repair'
-              example: 'I changed the broken screen and now it is ok !'
-              minLength: 1
-              maxLength: 2048
-        relationships:
-          type: object
-          properties:
-            article: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            break: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+              example: 'repairs'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  description: 'Details of the repair'
+                  example: 'I changed the broken screen and now it is ok !'
+                  minLength: 1
+                  maxLength: 2048
+            relationships:
+              type: object
+              properties:
+                article: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                break: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes   
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     RepairResponse:
       title: Repair Response
       type: object
@@ -2224,42 +2249,47 @@ components:
       x-tags:
         - Options
       properties:
-        type:
-          type: string
-          example: 'options'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
-          required:
-            - name
           properties:
-            name:
+            type:
               type: string
-              description: 'Name of the option'
-              example: 'Apple'
-              minLength: 1
-              maxLength: 64
-        relationships:
-          type: object
-          properties:
-            criterion: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            parents: 
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-            children: 
-              $ref: '#/components/schemas/ResourceIdentifierArray'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+              example: 'options'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the option'
+                  example: 'Apple'
+                  minLength: 1
+                  maxLength: 64
+            relationships:
+              type: object
+              properties:
+                criterion: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                parents: 
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+                children: 
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes    
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     OptionResponse:
       title: Option Response
       type: object
@@ -2333,52 +2363,57 @@ components:
       x-tags:
         - Evaluations
       properties:
-        type:
-          type: string
-          example: 'evaluations'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
-          required:
-            - comment
           properties:
-            comment:
+            type:
               type: string
-              description: 'Comment of the evaluation'
-              example: 'Maybe this is a problem in the graphic card...'
-              minLength: 1
-              maxLength: 2048
-            cost:
+              example: 'evaluations'
+              description: 'Type of the resource'
+            id:
               type: integer
-              description: 'Cost of repair on a scale of 0 to 5'
-              example: 2
-              minimum: 0
-              maximum: 5
-            difficulty:
-              type: integer
-              description: 'Cost of repair on a scale of 0 to 5'
-              example: 2
-              minimum: 0
-              maximum: 5
-        relationships:
-          type: object
-          properties:
-            author: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            article: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  description: 'Comment of the evaluation'
+                  example: 'Maybe this is a problem in the graphic card...'
+                  minLength: 1
+                  maxLength: 2048
+                cost:
+                  type: integer
+                  description: 'Cost of repair on a scale of 0 to 5'
+                  example: 2
+                  minimum: 0
+                  maximum: 5
+                difficulty:
+                  type: integer
+                  description: 'Cost of repair on a scale of 0 to 5'
+                  example: 2
+                  minimum: 0
+                  maximum: 5
+            relationships:
+              type: object
+              properties:
+                author: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                article: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes   
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     EvaluationResponse:
       title: Evaluation Response
       type: object
@@ -2470,48 +2505,53 @@ components:
       x-tags:
         - Negociations
       properties:
-        type:
-          type: string
-          example: 'negociations'
-          description: 'Type of the resource'
-        id:
-          type: integer
-          description: 'ID of the resource'
-          example: 42
-        attributes:
+        data:
           type: object
+          properties:
+            type:
+              type: string
+              example: 'negociations'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - price
+              properties:
+                price:
+                  type: number
+                  minimum: 0
+                  maximum: 100000
+                  description: The proposed price for the article
+                  example: 120
+                cancelled:
+                  type: boolean
+                accepted:
+                  type: boolean
+            relationships:
+              type: object
+              properties:
+                sale: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                message: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                negociator: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                article: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
           required:
-            - price
-          properties:
-            price:
-              type: number
-              minimum: 0
-              maximum: 100000
-              description: The proposed price for the article
-              example: 120
-            cancelled:
-              type: boolean
-            accepted:
-              type: boolean
-        relationships:
-          type: object
-          properties:
-            sale: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            message: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            negociator: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-            article: 
-              $ref: '#/components/schemas/ResourceIdentifier'
-        meta:
-          $ref: '#/components/schemas/MetaDataObject'
-        links:
-          $ref: '#/components/schemas/LinksObject'
+            - type
+            - relationships
+            - attributes    
       required:
-        - type
-        - relationships
-        - attributes    
+        - data
     NegociationResponse:
       title: Negociation Response
       type: object
