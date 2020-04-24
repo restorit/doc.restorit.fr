@@ -2463,8 +2463,6 @@ components:
                   maximum: 100000
                   description: The proposed price for the article
                   example: 120
-                cancelled:
-                  type: boolean
                 accepted:
                   type: boolean
             relationships:
@@ -2530,7 +2528,6 @@ components:
           type: object
           required:
             - price
-            - cancelled
             - accepted
           properties:
             price:
@@ -2539,8 +2536,6 @@ components:
               maximum: 100000
               description: The proposed price for the article
               example: 120
-            cancelled:
-              type: boolean
             accepted:
               type: boolean
         relationships:
