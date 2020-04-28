@@ -1972,6 +1972,8 @@ components:
     TokenResource:
       title: Token Resource
       type: object
+      x-tags:
+        - Authentication
       properties:
         accessToken:
           description: Access token to use for authentication
@@ -2101,6 +2103,8 @@ components:
         - Users
     UserResource:
       type: object
+      x-tags:
+        - Users
       properties:
         type:
           type: string
@@ -2279,6 +2283,8 @@ components:
         - Articles
     ArticleResource:
       type: object
+      x-tags:
+        - Articles
       properties:
         type:
           type: string
@@ -2440,6 +2446,8 @@ components:
         - Sales
     SaleResource:
       type: object
+      x-tags:
+        - Sales
       properties:
         type:
           type: string
@@ -2581,6 +2589,8 @@ components:
         - Criteria
     CriterionResource:
       type: object
+      x-tags:
+        - Criteria
       properties:
         type:
           type: string
@@ -2696,6 +2706,8 @@ components:
         - Breaks
     BreakResource:
       type: object
+      x-tags:
+        - Breaks
       properties:
         type:
           type: string
@@ -2806,6 +2818,8 @@ components:
         - Repairs
     RepairResource:
       type: object
+      x-tags:
+        - Repairs
       properties:
         type:
           type: string
@@ -2918,6 +2932,8 @@ components:
         - Options
     OptionResource:
       type: object
+      x-tags:
+        - Options
       properties:
         type:
           type: string
@@ -3042,6 +3058,8 @@ components:
         - Evaluations
     EvaluationResource:
       type: object
+      x-tags:
+        - Evaluations
       properties:
         type:
           type: string
@@ -3180,6 +3198,8 @@ components:
         - Negociations
     NegociationResource:
       type: object
+      x-tags:
+        - Negocations
       properties:
         type:
           type: string
@@ -3304,6 +3324,8 @@ components:
         - Messages
     MessageResource:
       type: object
+      x-tags:
+        - Messages
       properties:
         type:
           type: string
@@ -3414,6 +3436,8 @@ components:
         - Conversations
     ConversationResource:
       type: object
+      x-tags:
+        - Conversations
       properties:
         type:
           type: string
@@ -3456,9 +3480,13 @@ components:
         - attributes
     MetaDataObject:
       type: object
+      x-tags:
+        - Json Api
       description: 'Meta Data of the resource'
     RelationshipObject:
       type: object
+      x-tags:
+        - Json Api
       description: 'Relationship resource'
       properties:
         links:
@@ -3471,6 +3499,8 @@ components:
           $ref: '#/components/schemas/MetaDataObject'
     LinksObject:
       type: object
+      x-tags:
+        - Json Api
       properties:
         self:
           type: string
@@ -3484,6 +3514,8 @@ components:
               $ref: '#/components/schemas/MetaDataObject'
     ResourceIdentifier:
       type: object
+      x-tags:
+        - Json Api
       properties:
         type:
           type: string
@@ -3498,6 +3530,8 @@ components:
         - id
     ResourceIdentifierArray:
       type: array
+      x-tags:
+        - Json Api
       items:
         $ref: '#/components/schemas/ResourceIdentifier'
   securitySchemes:
