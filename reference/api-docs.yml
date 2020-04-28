@@ -741,6 +741,8 @@ paths:
                 $ref: "#/components/schemas/SalesResponse"
         '422':
           description: Unprocessable Entity
+      security:
+        - bearerAuth: []
     post:
       tags:
         - Sales
