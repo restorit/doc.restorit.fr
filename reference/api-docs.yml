@@ -2279,9 +2279,12 @@ components:
         - meta
     ArticlesResponse:
       title: Articles Response
-      type: array
-      items:
-        $ref: "#/components/schemas/ArticleResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleResource"
       x-tags:
         - Articles
     ArticleResource:
