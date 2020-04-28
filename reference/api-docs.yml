@@ -2098,9 +2098,12 @@ components:
         - meta
     UsersResponse:
       title: Users Response
-      type: array
-      items:
-        $ref: "#/components/schemas/UserResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResource"
       x-tags:
         - Users
     UserResource:
@@ -2446,9 +2449,12 @@ components:
         - meta
     SalesResponse:
       title: Sales Response
-      type: array
-      items:
-        $ref: "#/components/schemas/SaleResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SaleResource"
       x-tags:
         - Sales
     SaleResource:
@@ -2590,9 +2596,12 @@ components:
         - meta
     CriteriaResponse:
       title: Criteria Response
-      type: array
-      items:
-        $ref: "#/components/schemas/CriterionResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CriterionResource"
       x-tags:
         - Criteria
     CriterionResource:
@@ -2708,9 +2717,12 @@ components:
         - meta
     BreaksResponse:
       title: Breaks Response
-      type: array
-      items:
-        $ref: "#/components/schemas/BreakResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BreakResource"
       x-tags:
         - Breaks
     BreakResource:
@@ -2821,9 +2833,12 @@ components:
         - meta
     RepairsResponse:
       title: Repairs Response
-      type: array
-      items:
-        $ref: "#/components/schemas/RepairResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/RepairResource"
       x-tags:
         - Repairs
     RepairResource:
@@ -2936,9 +2951,12 @@ components:
         - meta
     OptionsResponse:
       title: Options Response
-      type: array
-      items:
-        $ref: "#/components/schemas/OptionResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionResource"
       x-tags:
         - Options
     OptionResource:
@@ -3063,9 +3081,12 @@ components:
         - meta
     EvaluationsResponse:
       title: Evaluations Response
-      type: array
-      items:
-        $ref: "#/components/schemas/EvaluationResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvaluationResource"
       x-tags:
         - Evaluations
     EvaluationResource:
@@ -3204,9 +3225,12 @@ components:
         - meta
     NegociationsResponse:
       title: Negociations Response
-      type: array
-      items:
-        $ref: "#/components/schemas/NegociationResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/NegociationResource"
       x-tags:
         - Negociations
     NegociationResource:
@@ -3331,9 +3355,12 @@ components:
         - meta
     MessagesResponse:
       title: Messages Response
-      type: array
-      items:
-        $ref: "#/components/schemas/MessageResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageResource"
       x-tags:
         - Messages
     MessageResource:
@@ -3444,9 +3471,12 @@ components:
         - meta
     ConversationsResponse:
       title: Conversations Response
-      type: array
-      items:
-        $ref: "#/components/schemas/ConversationResource"
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConversationResource"
       x-tags:
         - Conversations
     ConversationResource:
