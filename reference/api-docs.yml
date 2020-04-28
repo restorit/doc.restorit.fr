@@ -2105,6 +2105,7 @@ components:
         - Users
     UserResource:
       type: object
+      title: User Resource
       x-tags:
         - Users
       properties:
@@ -2285,6 +2286,7 @@ components:
         - Articles
     ArticleResource:
       type: object
+      title: Article Resource
       x-tags:
         - Articles
       properties:
@@ -2448,6 +2450,7 @@ components:
         - Sales
     SaleResource:
       type: object
+      title: Sale Resource
       x-tags:
         - Sales
       properties:
@@ -2591,6 +2594,7 @@ components:
         - Criteria
     CriterionResource:
       type: object
+      title: Criterion Resource
       x-tags:
         - Criteria
       properties:
@@ -2708,6 +2712,7 @@ components:
         - Breaks
     BreakResource:
       type: object
+      title: Break Resource
       x-tags:
         - Breaks
       properties:
@@ -2820,6 +2825,7 @@ components:
         - Repairs
     RepairResource:
       type: object
+      title: Repair Resource
       x-tags:
         - Repairs
       properties:
@@ -2934,6 +2940,7 @@ components:
         - Options
     OptionResource:
       type: object
+      title: Option Resource
       x-tags:
         - Options
       properties:
@@ -3060,6 +3067,7 @@ components:
         - Evaluations
     EvaluationResource:
       type: object
+      title: Evaluation Resource
       x-tags:
         - Evaluations
       properties:
@@ -3200,6 +3208,7 @@ components:
         - Negociations
     NegociationResource:
       type: object
+      title: Negociation Resource
       x-tags:
         - Negocations
       properties:
@@ -3326,6 +3335,7 @@ components:
         - Messages
     MessageResource:
       type: object
+      title: Message Resource
       x-tags:
         - Messages
       properties:
@@ -3438,6 +3448,7 @@ components:
         - Conversations
     ConversationResource:
       type: object
+      title: Conversation Resource
       x-tags:
         - Conversations
       properties:
