@@ -24,9 +24,330 @@ info:
 servers:
   - url: 'https://v2.api.restorit.fr'
     description: Production
+  - url: 'https://staging.api.restorit.fr'
+    description: Staging
   - url: 'http://localhost:8000'
     description: Development
 paths:
+  '/conversations':
+    get:
+      operationId: indexConversations
+      tags:
+        - Conversations
+      summary: Get a list of conversations
+      description: Return a collection of **conversation** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ConversationsResponse"
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Conversations
+      summary: Store a conversation
+      description: 'Create an **conversation** resource.'
+      operationId: storeConversation
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/ConversationRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: conversations
+                    id: 1
+                    links:
+                      self: 'https://v2.api.restorit.fr/conversations/1'
+                    relationships:
+                      user2:
+                        data:
+                          type: users
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ConversationResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/conversations/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Conversation Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      summary: Get a conversation
+      description: 'Returns an **conversation** resource.'
+      operationId: showConversation
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ConversationResponse"
+        '404':
+          description: Conversation not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Conversations
+      summary: Delete a conversation
+      description: 'Delete a **conversation** resource.'
+      operationId: deleteConversation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ConversationResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Conversation not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+  '/messages':
+    get:
+      operationId: indexMessages
+      tags:
+        - Negociations
+      summary: Get a list of messages
+      description: Return a collection of **message** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MessagesResponse"
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Messages
+      summary: Store a message
+      description: 'Create an **message** resource.'
+      operationId: storeMessage
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/MessageRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: messages
+                    id: 1
+                    attributes:
+                      text: "Hello world !"
+                    links:
+                      self: 'https://v2.api.restorit.fr/messages/1'
+                    relationships:
+                      conversation:
+                        data:
+                          type: conversations
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/NegociationResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/messages/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Message Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Messages
+      security:
+        - bearerAuth: []
+      summary: Get a message
+      description: 'Returns an **message** resource.'
+      operationId: showMessage
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        '404':
+          description: Message not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Messages
+      summary: Delete a message
+      description: 'Delete a **message** resource.'
+      operationId: deleteMessage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Message not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+    patch:
+      summary: Update a message
+      operationId: updateMessage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **message** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/MessageRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: messages
+                    id: 1
+                    attributes:
+                      text: "Voici le nouveau texte"
+                    links:
+                      self: 'https://v2.api.restorit.fr/negociations/1'
+      security:
+        - bearerAuth: []
+      tags:
+        - Messages
   '/negociations':
     get:
       operationId: indexNegociations
@@ -388,6 +709,181 @@ paths:
         - bearerAuth: []
       tags:
         - Evaluations
+  '/sales':
+    get:
+      operationId: indexSales
+      tags:
+        - Sales
+      summary: Get a list of sales
+      description: Return a collection of **sale** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SalesResponse"
+        '422':
+          description: Unprocessable Entity
+    post:
+      tags:
+        - Sales
+      summary: Store a sale
+      description: 'Create an **sale** resource.'
+      operationId: storeSale
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/SaleRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: sales
+                    relationships:
+                      negociation:
+                        data:
+                          type: negociation
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/EvaluationResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/sales/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Sale Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Sales
+      summary: Get a sale
+      description: 'Returns an **sale** resource.'
+      operationId: showSale
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SaleResponse"
+        '404':
+          description: Sale not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Sales
+      summary: Delete a sale
+      description: 'Delete a **sale** resource.'
+      operationId: deleteSale
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SaleResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Sale not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+    patch:
+      summary: Update a sale
+      operationId: updateSale
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/SaleResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **sale** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/SaleRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: sales
+                    id: 1
+                    relationships: {}
+                    links:
+                      self: 'https://v2.api.restorit.fr/sales/1'
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+      security:
+        - bearerAuth: []
+      tags:
+        - Sales
   '/options':
     get:
       operationId: indexOptions
@@ -1618,6 +2114,15 @@ components:
           type: object
           required:
             - name
+            - displayName
+            - email
+            - showEmail
+            - phone
+            - showPhone
+            - emailVerifiedAt
+            - deletedAt
+            - isMe
+            - isBlocked
           properties:
             name:
               type: string
@@ -1650,18 +2155,14 @@ components:
               type: boolean
               description: 'If the user want to dislay his phone'
               example: false
-            password:
-              type: string
-              description: 'Password of the user'
-              example: 'thisisapassword'     
-              minLength: 8
-              maxLength: 256   
-            passwordConfirmation:
-              type: string
-              description: 'Password of the user repeated (required for the first set of the password and each time the user want to change the mail or the current password'
-              example: 'thisisapassword'     
-              minLength: 8
-              maxLength: 256        
+            isMe:
+              type: boolean
+              description: 'If the user requested is the one authenticated'
+              example: true
+            isBlocked:
+              type: boolean
+              description: 'If the user requested is blocked by the user authenticated'
+              example: false
         relationships:
           type: object
           properties:
@@ -1793,6 +2294,13 @@ components:
             - title
             - comment
             - price
+            - evaluation
+            - createdAt
+            - updatedAt
+            - sold
+            - paid
+            - broken
+            - repair
           properties:
             title:
               type: string
@@ -1812,6 +2320,42 @@ components:
               example: 32
               minimum: 0
               maximum: 100000
+            evaluation:
+              type: object
+              description: 'Average evaluation of the article'
+              required:
+                - cost
+                - difficulty
+                - count
+              properties:
+                cost:
+                  type: number
+                  description: 'Average cost of repair'
+                  example: 2.2
+                difficulty:
+                  type: number
+                  description: 'Average difficulty of repair'
+                  example: 3.6
+                count:
+                  type: number
+                  description: 'Number of evaluations'
+                  example: 15
+            broken:
+              type: boolean
+              description: "True if the article is a broken article"
+              example: true
+            repair:
+              type: boolean
+              description: "True if the article is a repaired article"
+              example: true              
+            sold:
+              type: boolean
+              description: "True if the article is sold"
+              example: false
+            paid:
+              type: boolean
+              description: "True if the article is paid"
+              example: false                        
         relationships:
           type: object
           properties:
@@ -1826,6 +2370,125 @@ components:
             sale:
               $ref: '#/components/schemas/RelationshipObject'
             negociations:
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    SaleRequest:
+      title: Sale Request
+      type: object
+      description: 'This resource represents an sale in the marketplace.'
+      x-tags:
+        - Sales
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'sales'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            relationships:
+              type: object
+              properties:
+                negociation: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+      required:
+        - data    
+    SaleResponse:
+      title: Sale Response
+      type: object
+      description: 'This resource represents a sale.'
+      x-tags:
+        - Sales
+      properties:
+        data:
+          $ref: "#/components/schemas/SaleResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    SalesResponse:
+      title: Sales Response
+      type: array
+      items:
+        $ref: "#/components/schemas/SaleResource"
+      x-tags:
+        - Sales
+    SaleResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: 'sales'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - createdAt
+            - updatedAt
+            - paid
+            - received
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            paid:
+              type: boolean
+              description: 'True if the article has been paid'
+              example: true
+            received:
+              type: boolean
+              description: 'True if the article has been received'
+              example: false              
+            paypal:
+              type: object
+              description: 'Paypal order id only visible for the negociator'
+              required:
+                - orderId
+              properties:
+                orderId:
+                  type: string
+                  description: 'Paypal order id'
+                  example: '5O190127TN364715T'
+        relationships:
+          type: object
+          properties:
+            author: 
+              $ref: '#/components/schemas/RelationshipObject'
+            purchaser:
+              $ref: '#/components/schemas/RelationshipObject'
+            article:
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
@@ -2168,7 +2831,7 @@ components:
           properties:
             break: 
               $ref: '#/components/schemas/RelationshipObject'
-            article: 
+            author: 
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
@@ -2394,6 +3057,8 @@ components:
             - comment
             - createdAt
             - updatedAt
+            - cost
+            - difficulty
           properties:
             createdAt:
               type: string
@@ -2529,6 +3194,7 @@ components:
           required:
             - price
             - accepted
+            - declined
           properties:
             price:
               type: number
@@ -2536,14 +3202,249 @@ components:
               maximum: 100000
               description: The proposed price for the article
               example: 120
-            accepted:
+            declined:
               type: boolean
+              example: false
+            accepted:
+              type: boolean 
+              example: true             
         relationships:
           type: object
           properties:
-            author: 
+            negociator: 
               $ref: '#/components/schemas/RelationshipObject'
             article: 
+              $ref: '#/components/schemas/RelationshipObject'
+            message: 
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    MessageRequest:
+      title: Message Request
+      type: object
+      description: 'Represent a message that can be send in a given conversation'
+      x-tags:
+        - Messages
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'messages'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: The text of the message
+                  example: 'Hello'
+                  minLength: 1
+                  maxLength: 2048
+            relationships:
+              type: object
+              properties:
+                conversation: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                negociation: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                receiver: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                sender: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes    
+      required:
+        - data
+    MessageResponse:
+      title: Message Response
+      type: object
+      description: 'Represent a message'
+      x-tags:
+        - Messages
+      properties:
+        data:
+          $ref: "#/components/schemas/MessageResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    MessagesResponse:
+      title: Messages Response
+      type: array
+      items:
+        $ref: "#/components/schemas/MessageResource"
+      x-tags:
+        - Messages
+    MessageResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: 'messages'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - text
+            - createdAt
+            - updatedAt
+          properties:
+            text:
+              type: string
+              description: Text of the message
+              example: "Hello"
+              minLength: 1
+              maxLength: 2048
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time              
+        relationships:
+          type: object
+          properties:
+            sender: 
+              $ref: '#/components/schemas/RelationshipObject'
+            receiver: 
+              $ref: '#/components/schemas/RelationshipObject'
+            negociation: 
+              $ref: '#/components/schemas/RelationshipObject'
+            conversation:
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    ConversationRequest:
+      title: Conversation Request
+      type: object
+      description: 'Represent a conversation with a given user'
+      x-tags:
+        - Conversations
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'conversations'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            relationships:
+              type: object
+              properties:
+                user1: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+                user2: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+      required:
+        - data
+    ConversationResponse:
+      title: Conversation Response
+      type: object
+      description: 'Represent a conversation'
+      x-tags:
+        - Conversations
+      properties:
+        data:
+          $ref: "#/components/schemas/ConversationResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    ConversationsResponse:
+      title: Conversations Response
+      type: array
+      items:
+        $ref: "#/components/schemas/ConversationResource"
+      x-tags:
+        - Conversations
+    ConversationResource:
+      type: object
+      properties:
+        type:
+          type: string
+          example: 'conversation'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            user1: 
+              $ref: '#/components/schemas/RelationshipObject'
+            user2: 
+              $ref: '#/components/schemas/RelationshipObject'
+            lastMessage: 
+              $ref: '#/components/schemas/RelationshipObject'
+            messages:
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
