@@ -626,6 +626,190 @@ paths:
         - bearerAuth: []
       tags:
         - Messages
+  '/images':
+    get:
+      operationId: indexImages
+      tags:
+        - Images
+      summary: Get a list of images
+      description: Return a collection of **image** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ImagesResponse"
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Images
+      summary: Store a image
+      description: 'Create an **image** resource.'
+      operationId: storeImage
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: images
+                    id: 1
+                    attributes:
+                      content: "base64ImageContent"
+                    links:
+                      self: 'https://api.restorit.fr/images/1'
+                    relationships:
+                      imageable:
+                        data:
+                          type: users
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ImageResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/images/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Image Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Images
+      security:
+        - bearerAuth: []
+      summary: Get an image
+      description: 'Returns a **image** resource.'
+      operationId: showImage
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ImageResponse"
+        '404':
+          description: Image not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Images
+      summary: Delete an image
+      description: 'Delete an **image** resource.'
+      operationId: deleteImage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ImageResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Image not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+    patch:
+      summary: Update an image
+      operationId: updateImage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ImageResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update an **image** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: images
+                    id: 1
+                    relationships:
+                      imageable:
+                        data:
+                          type: articles
+                          id: 1
+                    links:
+                      self: 'https://api.restorit.fr/images/1'
+      security:
+        - bearerAuth: []
+      tags:
+        - Images
   '/negociations':
     get:
       operationId: indexNegociations
@@ -3686,6 +3870,116 @@ components:
             negociation: 
               $ref: '#/components/schemas/RelationshipObject'
             conversation:
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    ImageRequest:
+      title: Image Request
+      type: object
+      description: 'Represent an image that can be attached to an article or a user'
+      x-tags:
+        - Images
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'images'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            attributes:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: Base 64 content of the image
+                  example: 'base64ImageContent'
+            relationships:
+              type: object
+              properties:
+                imageable: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes    
+      required:
+        - data
+    ImageResponse:
+      title: Image Response
+      type: object
+      description: 'Represent an image'
+      x-tags:
+        - Images
+      properties:
+        data:
+          $ref: "#/components/schemas/ImageResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    ImagesResponse:
+      title: Images Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImageResource"
+      x-tags:
+        - Images
+    ImageResource:
+      type: object
+      title: Image Resource
+      x-tags:
+        - Images
+      properties:
+        type:
+          type: string
+          example: 'images'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - link
+          properties:
+            link:
+              type: string
+              description: Link of the image
+              example: "https://picsum.photos/200"
+        relationships:
+          type: object
+          properties:
+            auhtor:
+              $ref: '#/components/schemas/RelationshipObject'
+            imageable:
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
