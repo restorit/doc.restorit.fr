@@ -15,6 +15,7 @@ tags:
   - name: Blockings
   - name: Criteria
   - name: Options
+  - name: Likes
 info:
   title: "Restor'It"
   description: "The documentation of Restor'It API"
@@ -30,6 +31,144 @@ servers:
   - url: 'http://localhost:8000'
     description: Development
 paths:
+  '/likes':
+    get:
+      operationId: indexLikes
+      tags:
+        - Likes
+      summary: Get a list of likes
+      description: Return a collection of **like** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/LikesResponse"
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Likes
+      summary: Store a like
+      description: 'Create an **like** resource.'
+      operationId: storeLike
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/LikeRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: likes
+                    id: 1
+                    links:
+                      self: 'https://api.restorit.fr/likes/1'
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/LikeResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/likes/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Like Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Likes
+      security:
+        - bearerAuth: []
+      summary: Get a like
+      description: 'Returns an **like** resource.'
+      operationId: showLike
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/LikeResponse"
+        '404':
+          description: Like not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Likes
+      summary: Delete a like
+      description: 'Delete a **like** resource.'
+      operationId: deleteLike
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/LikeResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Like not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
   '/blockings':
     get:
       operationId: indexBlockings
@@ -695,6 +834,8 @@ paths:
                 $ref: "#/components/schemas/EvaluationsResponse"
         '422':
           description: Unprocessable Entity
+      security:
+        - bearerAuth: []    
     post:
       tags:
         - Evaluations
@@ -3757,6 +3898,109 @@ components:
             user: 
               $ref: '#/components/schemas/RelationshipObject'
             blockedUser: 
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    LikeRequest:
+      title: Like Request
+      type: object
+      description: 'Represent a like on an article'
+      x-tags:
+        - Likes
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'likes'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            relationships:
+              type: object
+              properties:
+                article: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+      required:
+        - data
+    LikeResponse:
+      title: Like Response
+      type: object
+      description: 'Represent a like'
+      x-tags:
+        - Likes
+      properties:
+        data:
+          $ref: "#/components/schemas/LikeResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    LikesResponse:
+      title: Likes Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/LikeResource"
+      x-tags:
+        - Likes
+    LikeResource:
+      type: object
+      title: Like Resource
+      x-tags:
+        - Likes
+      properties:
+        type:
+          type: string
+          example: 'likes'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            user: 
+              $ref: '#/components/schemas/RelationshipObject'
+            article: 
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
