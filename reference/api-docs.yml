@@ -12,6 +12,7 @@ tags:
   - name: Repairs
   - name: Conversations
   - name: Messages
+  - name: Blockings
   - name: Criteria
   - name: Options
 info:
@@ -22,13 +23,151 @@ info:
     name: Clément SANCHEZ
   version: '2.0'
 servers:
-  - url: 'https://v2.api.restorit.fr'
+  - url: 'https://api.restorit.fr'
     description: Production
   - url: 'https://staging.api.restorit.fr'
     description: Staging
   - url: 'http://localhost:8000'
     description: Development
 paths:
+  '/blockings':
+    get:
+      operationId: indexBlockings
+      tags:
+        - Blockings
+      summary: Get a list of blockings
+      description: Return a collection of **blocking** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/BlockingsResponse"
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Blockings
+      summary: Store a blocking
+      description: 'Create an **blocking** resource.'
+      operationId: storeBlocking
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/BlockingRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: blockings
+                    id: 1
+                    links:
+                      self: 'https://api.restorit.fr/blockings/1'
+                    relationships:
+                      blockedUser:
+                        data:
+                          type: users
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/BlockingResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/blockings/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Blocking Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Blockings
+      security:
+        - bearerAuth: []
+      summary: Get a blocking
+      description: 'Returns an **blocking** resource.'
+      operationId: showBlocking
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/BlockingResponse"
+        '404':
+          description: Blocking not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Blockings
+      summary: Delete a blocking
+      description: 'Delete a **blocking** resource.'
+      operationId: deleteBlocking
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/BlockingResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Blocking not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
   '/conversations':
     get:
       operationId: indexConversations
@@ -83,7 +222,7 @@ paths:
                     type: conversations
                     id: 1
                     links:
-                      self: 'https://v2.api.restorit.fr/conversations/1'
+                      self: 'https://api.restorit.fr/conversations/1'
                     relationships:
                       user2:
                         data:
@@ -223,7 +362,7 @@ paths:
                     attributes:
                       text: "Hello world !"
                     links:
-                      self: 'https://v2.api.restorit.fr/messages/1'
+                      self: 'https://api.restorit.fr/messages/1'
                     relationships:
                       conversation:
                         data:
@@ -343,7 +482,7 @@ paths:
                     attributes:
                       text: "Voici le nouveau texte"
                     links:
-                      self: 'https://v2.api.restorit.fr/negociations/1'
+                      self: 'https://api.restorit.fr/negociations/1'
       security:
         - bearerAuth: []
       tags:
@@ -404,7 +543,7 @@ paths:
                     attributes:
                       price: 130
                     links:
-                      self: 'https://v2.api.restorit.fr/negociations/1'
+                      self: 'https://api.restorit.fr/negociations/1'
       responses:
         '201':
           description: Created
@@ -519,7 +658,7 @@ paths:
                     attributes:
                       price: 130
                     links:
-                      self: 'https://v2.api.restorit.fr/negociations/1'
+                      self: 'https://api.restorit.fr/negociations/1'
       security:
         - bearerAuth: []
       tags:
@@ -700,7 +839,7 @@ paths:
                       difficulty: 1
                     relationships: {}
                     links:
-                      self: 'https://v2.api.restorit.fr/evaluations/1'
+                      self: 'https://api.restorit.fr/evaluations/1'
                     meta: {}
                   links: {}
                   meta: {}
@@ -877,7 +1016,7 @@ paths:
                     id: 1
                     relationships: {}
                     links:
-                      self: 'https://v2.api.restorit.fr/sales/1'
+                      self: 'https://api.restorit.fr/sales/1'
                     meta: {}
                   links: {}
                   meta: {}
@@ -1060,7 +1199,7 @@ paths:
                         name: Apple
                       relationships: {}
                       links:
-                        self: 'https://v2.api.restorit.fr/options/1'
+                        self: 'https://api.restorit.fr/options/1'
                       meta: {}
                   links: {}
                   meta: {}
@@ -1124,7 +1263,7 @@ paths:
                         comment: "I changed the broken screen and now it's ok !"
                       relationships: {}
                       links:
-                        self: 'https://v2.api.restorit.fr/repairs/1'
+                        self: 'https://api.restorit.fr/repairs/1'
                       meta: {}
                   links: {}
                   meta: {}
@@ -1242,7 +1381,7 @@ paths:
                         comment: "I changed the broken screen and now it's ok !"
                       relationships: {}
                       links:
-                        self: 'https://v2.api.restorit.fr/repairs/1'
+                        self: 'https://api.restorit.fr/repairs/1'
                       meta: {}
                   links: {}
                   meta: {}
@@ -1416,7 +1555,7 @@ paths:
                         comment: The camera is not working anymore...
                       relationships: {}
                       links:
-                        self: 'https://v2.api.restorit.fr/breaks/1'
+                        self: 'https://api.restorit.fr/breaks/1'
                       meta: {}
                     links: {}
                     meta: {}
@@ -3515,6 +3654,109 @@ components:
             lastMessage: 
               $ref: '#/components/schemas/RelationshipObject'
             messages:
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    BlockingRequest:
+      title: Blocking Request
+      type: object
+      description: 'Represent a blocking between 2 users'
+      x-tags:
+        - Blockings
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'blockings'
+              description: 'Type of the resource'
+            id:
+              type: integer
+              description: 'ID of the resource'
+              example: 42
+            relationships:
+              type: object
+              properties:
+                blockedUser: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+      required:
+        - data
+    BlockingResponse:
+      title: Blocking Response
+      type: object
+      description: 'Represent a blocking'
+      x-tags:
+        - Blockings
+      properties:
+        data:
+          $ref: "#/components/schemas/BlockingResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    BlockingsResponse:
+      title: Blockings Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlockingResource"
+      x-tags:
+        - Blockings
+    BlockingResource:
+      type: object
+      title: Blocking Resource
+      x-tags:
+        - Blockings
+      properties:
+        type:
+          type: string
+          example: 'blockings'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+        relationships:
+          type: object
+          properties:
+            user: 
+              $ref: '#/components/schemas/RelationshipObject'
+            blockedUser: 
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
