@@ -2416,6 +2416,75 @@ paths:
           description: Invalid credentials
         '422':
           description: Unprocessable Entity
+  '/email/resend':
+    get:
+      tags:
+        - Authentication
+      summary: Email verification
+      description: Ask to receive an email to verify it thanks to a link
+      operationId: emailVerification
+      responses:
+        '200':
+          description: "Email verification link sent on your email id"
+        '400':
+          description: Email already verified.
+  '/password/email':
+    post:
+      tags:
+        - Authentication
+      summary: Forgot password request
+      description: Ask for a reset password link
+      operationId: passwordRequest
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "email where to send the reset link"
+      responses:
+        '200':
+          description: Reset password link sent on your email id.
+        '422':
+          description: Unprocessable Entity
+  '/password/reset':
+    post:
+      tags:
+        - Authentication
+      summary: Forgot password reset
+      description: Reset a password
+      operationId: passwordReset
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "email"
+                token:
+                  type: string
+                  description: "token (from email)"
+                password:
+                  type: string
+                  description: "new password"
+                passwordConfirmation:
+                  type: string
+                  description: "new password confirmation"
+      responses:
+        '200':
+          description: Password has been successfully changed
+        '422':
+          description: Unprocessable Entity
+        '401':
+          description: Invalid token
 components:
   schemas:
     AuthRequest:
