@@ -2534,10 +2534,6 @@ components:
               type: string
               example: 'users'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -2715,8 +2711,24 @@ components:
               $ref: '#/components/schemas/RelationshipObject'
             articles:
               $ref: '#/components/schemas/RelationshipObject'
+            availableArticles:
+              $ref: '#/components/schemas/RelationshipObject'
             evaluations:
               $ref: '#/components/schemas/RelationshipObject'
+            messages:
+              $ref: '#/components/schemas/RelationshipObject'  
+            conversations:
+              $ref: '#/components/schemas/RelationshipObject'     
+            repairedArticles:
+              $ref: '#/components/schemas/RelationshipObject'
+            negociations:
+              $ref: '#/components/schemas/RelationshipObject'
+            sales:
+              $ref: '#/components/schemas/RelationshipObject' 
+            likes:
+              $ref: '#/components/schemas/RelationshipObject' 
+            blockings:
+              $ref: '#/components/schemas/RelationshipObject' 
         meta:
           $ref: '#/components/schemas/MetaDataObject'
         links:
@@ -2739,10 +2751,6 @@ components:
               type: string
               example: 'articles'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -2920,6 +2928,18 @@ components:
               $ref: '#/components/schemas/RelationshipObject'
             negociations:
               $ref: '#/components/schemas/RelationshipObject'
+            waitingNegociations:
+              $ref: '#/components/schemas/RelationshipObject'
+            myNegociation:
+              $ref: '#/components/schemas/RelationshipObject'  
+            declinedNegociations:
+              $ref: '#/components/schemas/RelationshipObject'                
+            author:
+              $ref: '#/components/schemas/RelationshipObject'
+            myEvaluation:
+              $ref: '#/components/schemas/RelationshipObject'
+            likes:
+              $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
         links:
@@ -2942,10 +2962,6 @@ components:
               type: string
               example: 'sales'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             relationships:
               type: object
               properties:
@@ -3039,11 +3055,13 @@ components:
         relationships:
           type: object
           properties:
-            author: 
+            seller: 
               $ref: '#/components/schemas/RelationshipObject'
             purchaser:
               $ref: '#/components/schemas/RelationshipObject'
             article:
+              $ref: '#/components/schemas/RelationshipObject'
+            negociation:
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
@@ -3067,10 +3085,6 @@ components:
               type: string
               example: 'criteria'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3196,10 +3210,6 @@ components:
               type: string
               example: 'breaks'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3312,10 +3322,6 @@ components:
               type: string
               example: 'repairs'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3406,6 +3412,8 @@ components:
               $ref: '#/components/schemas/RelationshipObject'
             author: 
               $ref: '#/components/schemas/RelationshipObject'
+            article: 
+              $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
         links:
@@ -3428,10 +3436,6 @@ components:
               type: string
               example: 'options'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3548,10 +3552,6 @@ components:
               type: string
               example: 'evaluations'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3698,10 +3698,6 @@ components:
               type: string
               example: 'negociations'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3830,10 +3826,6 @@ components:
               type: string
               example: 'messages'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -3932,9 +3924,7 @@ components:
         relationships:
           type: object
           properties:
-            sender: 
-              $ref: '#/components/schemas/RelationshipObject'
-            receiver: 
+            author: 
               $ref: '#/components/schemas/RelationshipObject'
             negociation: 
               $ref: '#/components/schemas/RelationshipObject'
@@ -3962,10 +3952,6 @@ components:
               type: string
               example: 'images'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             attributes:
               type: object
               required:
@@ -4072,10 +4058,6 @@ components:
               type: string
               example: 'conversations'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             relationships:
               type: object
               properties:
@@ -4151,9 +4133,7 @@ components:
         relationships:
           type: object
           properties:
-            user1: 
-              $ref: '#/components/schemas/RelationshipObject'
-            user2: 
+            users: 
               $ref: '#/components/schemas/RelationshipObject'
             lastMessage: 
               $ref: '#/components/schemas/RelationshipObject'
@@ -4181,10 +4161,6 @@ components:
               type: string
               example: 'blockings'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             relationships:
               type: object
               properties:
@@ -4284,10 +4260,6 @@ components:
               type: string
               example: 'likes'
               description: 'Type of the resource'
-            id:
-              type: integer
-              description: 'ID of the resource'
-              example: 42
             relationships:
               type: object
               properties:
