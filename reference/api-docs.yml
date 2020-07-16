@@ -2428,6 +2428,8 @@ paths:
           description: "Email verification link sent on your email id"
         '400':
           description: Email already verified.
+      security:
+        - bearerAuth: []
   '/password/email':
     post:
       tags:
