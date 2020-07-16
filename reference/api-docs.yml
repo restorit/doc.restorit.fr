@@ -4384,12 +4384,15 @@ components:
       x-tags:
         - Json Api
       properties:
-        type:
-          type: string
-          example: 'articles'
-        id:
-          type: number
-          example: 42
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'articles'
+            id:
+              type: number
+              example: 42
         meta:
            $ref: '#/components/schemas/MetaDataObject'
       required:
