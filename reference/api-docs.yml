@@ -88,6 +88,8 @@ paths:
                       self: 'https://api.restorit.fr/likes/1'
                     relationships:
                       article:
+                        type: object
+                        id: 1
                         data:
                           type: articles
                           id: 1
@@ -359,14 +361,11 @@ paths:
                 value:
                   data:
                     type: conversations
-                    id: 1
-                    links:
-                      self: 'https://api.restorit.fr/conversations/1'
                     relationships:
-                      user2:
+                      users:
                         data:
-                          type: users
-                          id: 1
+                          - type: users
+                            id: 2
       responses:
         '201':
           description: Created
