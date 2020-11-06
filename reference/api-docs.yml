@@ -2477,7 +2477,183 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - Articles
+        - Markets
+  '/products':
+    get:
+      operationId: indexProducts
+      tags:
+        - Products
+      summary: Get a list of products
+      description: Returns a collection of **product** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        '422':
+          description: Unprocessable Entity
+    post:
+      tags:
+        - Products
+      summary: Store a product
+      description: 'Create a **product** resource.'
+      operationId: storeProduct
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: products
+                    attributes:
+                      name: Kit Iphone 11
+                      url: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
+                      type: 'REPAIRE_KIT'
+                    relationships:
+                      market:
+                        data:
+                          type: markets
+                          id: 1
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/products/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Product Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Products
+      summary: Get a product
+      description: 'Returns a **product** resource.'
+      operationId: showProduct
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        '404':
+          description: Product not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      description: 'Delete a **product** resource.'
+      operationId: deleteProduct
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Product not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+    patch:
+      summary: Update a product
+      operationId: updateProduct
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **product** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/MarketRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: markets
+                    attributes:
+                      name: 'Ebay'
+                      url: 'http://ebay.fr'
+                      priceXmlPath: '//*[@id="prcIsum"]'
+                    relationships: {}
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
   '/users':
     post:
       tags:
@@ -3033,6 +3209,132 @@ components:
           type: object
           properties:
             products: 
+              $ref: '#/components/schemas/RelationshipObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    ProductRequest:
+      title: Product Request
+      type: object
+      description: 'This resource represents a product in the marketplace'
+      x-tags:
+        - Products
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'products'
+              description: 'Type of the resource'
+            attributes:
+              type: object
+              required:
+                - name
+                - url
+                - type
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the product'
+                  example: 'Kit iphone X'
+                  maxLength: 256
+                url:
+                  type: string
+                  description: 'url of the product - market base url'
+                  example: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
+                type:
+                  type: string
+                  description: 'REPAIR_KIT or SPARE_KIT'
+                  example: 'REPAIR_KIT'
+            relationships:
+              type: object
+              properties:
+                market: 
+                  $ref: '#/components/schemas/ResourceIdentifier'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes
+      required:
+        - data    
+    ProductResponse:
+      title: Product Response
+      type: object
+      description: 'This resource represents a product in the marketplace'
+      x-tags:
+        - Products
+      properties:
+        data:
+          $ref: "#/components/schemas/ProductResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    ProductsResponse:
+      title: Products Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductResource"
+      x-tags:
+        - Markets
+    ProductResource:
+      type: object
+      title: Product Resource
+      x-tags:
+        - Products
+      properties:
+        type:
+          type: string
+          example: 'products'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - name
+            - url
+            - type
+          properties:
+            name:
+              type: string
+              description: 'Name of the product'
+              example: 'Iphone X kit'
+              maxLength: 256
+            url:
+              type: string
+              description: 'url of the product - base url of the market'
+              example: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
+            type:
+              type: string
+              description: 'REPAIR_KIT or SPARE_KIT'
+              example: 'REPAIR_KIT'
+        relationships:
+          type: object
+          properties:
+            market: 
               $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
