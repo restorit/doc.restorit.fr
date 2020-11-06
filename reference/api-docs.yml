@@ -3296,7 +3296,7 @@ components:
           items:
             $ref: "#/components/schemas/ProductResource"
       x-tags:
-        - Markets
+        - Products
     ProductResource:
       type: object
       title: Product Resource
