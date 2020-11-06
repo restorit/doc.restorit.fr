@@ -16,6 +16,8 @@ tags:
   - name: Criteria
   - name: Options
   - name: Likes
+  - name: Markets
+  - name: Products
 info:
   title: "Restor'It"
   description: "The documentation of Restor'It API"
@@ -2304,6 +2306,178 @@ paths:
         - bearerAuth: []
       tags:
         - Articles
+  '/markets':
+    get:
+      operationId: indexMarkets
+      tags:
+        - Markets
+      summary: Get a list of markets
+      description: Returns a collection of **market** resources.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Comma separated list of fields to sort. Please refer to the JSON API article
+        - schema:
+            type: array
+          in: query
+          name: filter
+          description: Array of filter. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MarketsResponse"
+        '422':
+          description: Unprocessable Entity
+    post:
+      tags:
+        - Markets
+      summary: Store a market
+      description: 'Create a **market** resource.'
+      operationId: storeMarket
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/MarketRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: markets
+                    attributes:
+                      name: Ebay
+                      url: 'http://ebay.fr'
+                      priceXmlPath: '//*[@id="prcIsum"]'
+                    relationships: {}
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MarketResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      security:
+        - bearerAuth: []
+    parameters: []
+  '/markets/{id}':
+    parameters:
+      - name: id
+        in: path
+        description: Market Id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - Markets
+      summary: Get a market
+      description: 'Returns a **market** resource.'
+      operationId: showMarket
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: include
+          description: Comma separated list of relationships to include. Please refer to the JSON API article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MarketResponse"
+        '404':
+          description: Market not found
+        '422':
+          description: Unprocessable Entity
+    delete:
+      tags:
+        - Markets
+      summary: Delete a market
+      description: 'Delete a **market** resource.'
+      operationId: deleteMarket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MarketResponse"
+        '401':
+          description: Not Authenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Market not found
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          name: id
+          in: path
+          description: ID of the resource
+          required: true
+    patch:
+      summary: Update a market
+      operationId: updateMarket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/MarketResponse"
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Not Allowed
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      description: 'Update a **market** resource.'
+      parameters: []
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/MarketRequest"
+            examples:
+              Example:
+                value:
+                  data:
+                    type: markets
+                    attributes:
+                      name: 'Ebay'
+                      url: 'http://ebay.fr'
+                      priceXmlPath: '//*[@id="prcIsum"]'
+                    relationships: {}
+      security:
+        - bearerAuth: []
+      tags:
+        - Articles
   '/users':
     post:
       tags:
@@ -2730,6 +2904,136 @@ components:
               $ref: '#/components/schemas/RelationshipObject' 
             blockings:
               $ref: '#/components/schemas/RelationshipObject' 
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      required:
+        - type
+        - relationships
+        - attributes
+    MarketRequest:
+      title: Market Request
+      type: object
+      description: 'This resource represents an market in the marketplace'
+      x-tags:
+        - Markets
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'markets'
+              description: 'Type of the resource'
+            attributes:
+              type: object
+              required:
+                - name
+                - url
+                - priceXmlPath
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the market'
+                  example: 'Ebay'
+                  maxLength: 64
+                url:
+                  type: string
+                  description: 'Base url of the market'
+                  example: 'http://ebay.fr'
+                  maxLength: 256
+                priceXmlPath:
+                  type: string
+                  description: 'Xml Path for articles price in this market'
+                  example: '//*[@id="prcIsum"]'
+                  maximum: 512
+            relationships:
+              type: object
+              properties:
+                products: 
+                  $ref: '#/components/schemas/ResourceIdentifierArray'
+            meta:
+              $ref: '#/components/schemas/MetaDataObject'
+            links:
+              $ref: '#/components/schemas/LinksObject'
+          required:
+            - type
+            - relationships
+            - attributes
+      required:
+        - data    
+    MarketResponse:
+      title: Market Response
+      type: object
+      description: 'This resource represents a market in the marketplace'
+      x-tags:
+        - Markets
+      properties:
+        data:
+          $ref: "#/components/schemas/MarketResource"
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API article
+      required:
+        - data
+        - links
+        - meta
+    MarketsResponse:
+      title: Markets Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/MarketResource"
+      x-tags:
+        - Markets
+    MarketResource:
+      type: object
+      title: Market Resource
+      x-tags:
+        - Markets
+      properties:
+        type:
+          type: string
+          example: 'markets'
+          description: 'Type of the resource'
+        id:
+          type: integer
+          description: 'ID of the resource'
+          example: 42
+        attributes:
+          type: object
+          required:
+            - name
+            - url
+            - priceXmlPath
+          properties:
+            name:
+              type: string
+              description: 'Name of the market'
+              example: 'Ebay'
+              maxLength: 64
+            url:
+              type: string
+              description: 'Base url of the market'
+              example: 'http://ebay.fr'
+              maxLength: 256
+            priceXmlPath:
+              type: string
+              description: 'Xml Path for articles price in this market'
+              example: '//*[@id="prcIsum"]'
+              maximum: 512
+        relationships:
+          type: object
+          properties:
+            products: 
+              $ref: '#/components/schemas/RelationshipObject'
         meta:
           $ref: '#/components/schemas/MetaDataObject'
         links:
