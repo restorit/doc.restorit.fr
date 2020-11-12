@@ -2358,7 +2358,7 @@ paths:
                     type: markets
                     attributes:
                       name: Ebay
-                      url: 'http://ebay.fr'
+                      url: 'http://ebay.fr/'
                       priceXmlPath: '//*[@id="prcIsum"]'
                     relationships: {}
       responses:
@@ -2471,7 +2471,7 @@ paths:
                     type: markets
                     attributes:
                       name: 'Ebay'
-                      url: 'http://ebay.fr'
+                      url: 'http://ebay.fr/'
                       priceXmlPath: '//*[@id="prcIsum"]'
                     relationships: {}
       security:
@@ -2531,7 +2531,7 @@ paths:
                     attributes:
                       name: Kit Iphone 11
                       url: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
-                      type: 'REPAIRE_KIT'
+                      type: 'REPAIR_KIT'
                     relationships:
                       market:
                         data:
@@ -2647,7 +2647,7 @@ paths:
                     type: markets
                     attributes:
                       name: 'Ebay'
-                      url: 'http://ebay.fr'
+                      url: 'http://ebay.fr/'
                       priceXmlPath: '//*[@id="prcIsum"]'
                     relationships: {}
       security:
@@ -3117,7 +3117,7 @@ components:
                 url:
                   type: string
                   description: 'Base url of the market'
-                  example: 'http://ebay.fr'
+                  example: 'http://ebay.fr/'
                   maxLength: 256
                 priceXmlPath:
                   type: string
@@ -3198,7 +3198,7 @@ components:
             url:
               type: string
               description: 'Base url of the market'
-              example: 'http://ebay.fr'
+              example: 'http://ebay.fr/'
               maxLength: 256
             priceXmlPath:
               type: string
