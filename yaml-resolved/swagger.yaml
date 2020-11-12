@@ -1,0 +1,5440 @@
+openapi: 3.0.0
+info:
+  title: Restor'It
+  description: The documentation of Restor'It API
+  contact:
+    name: Clément SANCHEZ
+    email: clement@sanchez.sh
+  version: "2.0"
+servers:
+- url: https://api.restorit.fr
+  description: Production
+- url: https://staging.api.restorit.fr
+  description: Staging
+- url: http://localhost:8000
+  description: Development
+tags:
+- name: Json Api
+- name: Users
+- name: Authentication
+- name: Breaks
+- name: Articles
+- name: Images
+- name: Evaluations
+- name: Negociations
+- name: Sales
+- name: Repairs
+- name: Conversations
+- name: Messages
+- name: Blockings
+- name: Criteria
+- name: Options
+- name: Likes
+- name: Markets
+- name: Products
+paths:
+  /likes:
+    get:
+      tags:
+      - Likes
+      summary: Get a list of likes
+      description: Return a collection of **like** resources.
+      operationId: indexLikes
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/LikesResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Likes
+      summary: Store a like
+      description: Create an **like** resource.
+      operationId: storeLike
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/LikeRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: likes
+                    id: 1
+                    links:
+                      self: https://api.restorit.fr/likes/1
+                    relationships:
+                      article:
+                        type: object
+                        id: 1
+                        data:
+                          type: articles
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/LikeResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /likes/{id}:
+    get:
+      tags:
+      - Likes
+      summary: Get a like
+      description: Returns an **like** resource.
+      operationId: showLike
+      parameters:
+      - name: id
+        in: path
+        description: Like Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/LikeResponse'
+        "404":
+          description: Like not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Likes
+      summary: Delete a like
+      description: Delete a **like** resource.
+      operationId: deleteLike
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/LikeResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Like not found
+      security:
+      - bearerAuth: []
+  /blockings:
+    get:
+      tags:
+      - Blockings
+      summary: Get a list of blockings
+      description: Return a collection of **blocking** resources.
+      operationId: indexBlockings
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BlockingsResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Blockings
+      summary: Store a blocking
+      description: Create an **blocking** resource.
+      operationId: storeBlocking
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/BlockingRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: blockings
+                    id: 1
+                    links:
+                      self: https://api.restorit.fr/blockings/1
+                    relationships:
+                      blockedUser:
+                        data:
+                          type: users
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BlockingResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /blockings/{id}:
+    get:
+      tags:
+      - Blockings
+      summary: Get a blocking
+      description: Returns an **blocking** resource.
+      operationId: showBlocking
+      parameters:
+      - name: id
+        in: path
+        description: Blocking Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BlockingResponse'
+        "404":
+          description: Blocking not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Blockings
+      summary: Delete a blocking
+      description: Delete a **blocking** resource.
+      operationId: deleteBlocking
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BlockingResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Blocking not found
+      security:
+      - bearerAuth: []
+  /conversations:
+    get:
+      tags:
+      - Conversations
+      summary: Get a list of conversations
+      description: Return a collection of **conversation** resources.
+      operationId: indexConversations
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ConversationsResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Conversations
+      summary: Store a conversation
+      description: Create an **conversation** resource.
+      operationId: storeConversation
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ConversationRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: conversations
+                    relationships:
+                      users:
+                        data:
+                        - type: users
+                          id: 2
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /conversations/{id}:
+    get:
+      tags:
+      - Conversations
+      summary: Get a conversation
+      description: Returns an **conversation** resource.
+      operationId: showConversation
+      parameters:
+      - name: id
+        in: path
+        description: Conversation Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        "404":
+          description: Conversation not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Conversations
+      summary: Delete a conversation
+      description: Delete a **conversation** resource.
+      operationId: deleteConversation
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Conversation not found
+      security:
+      - bearerAuth: []
+  /messages:
+    get:
+      tags:
+      - Negociations
+      summary: Get a list of messages
+      description: Return a collection of **message** resources.
+      operationId: indexMessages
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MessagesResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Messages
+      summary: Store a message
+      description: Create an **message** resource.
+      operationId: storeMessage
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/MessageRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: messages
+                    id: 1
+                    attributes:
+                      text: Hello world !
+                    links:
+                      self: https://api.restorit.fr/messages/1
+                    relationships:
+                      conversation:
+                        data:
+                          type: conversations
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /messages/{id}:
+    get:
+      tags:
+      - Messages
+      summary: Get a message
+      description: Returns an **message** resource.
+      operationId: showMessage
+      parameters:
+      - name: id
+        in: path
+        description: Message Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "404":
+          description: Message not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Messages
+      summary: Delete a message
+      description: Delete a **message** resource.
+      operationId: deleteMessage
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Message not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Messages
+      summary: Update a message
+      description: Update a **message** resource.
+      operationId: updateMessage
+      parameters:
+      - name: id
+        in: path
+        description: Message Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/MessageRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: messages
+                    id: 1
+                    attributes:
+                      text: Voici le nouveau texte
+                    links:
+                      self: https://api.restorit.fr/negociations/1
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /images:
+    get:
+      tags:
+      - Images
+      summary: Get a list of images
+      description: Return a collection of **image** resources.
+      operationId: indexImages
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Images
+      summary: Store a image
+      description: Create an **image** resource.
+      operationId: storeImage
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: images
+                    id: 1
+                    attributes:
+                      content: base64ImageContent
+                    links:
+                      self: https://api.restorit.fr/images/1
+                    relationships:
+                      imageable:
+                        data:
+                          type: users
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /images/{id}:
+    get:
+      tags:
+      - Images
+      summary: Get an image
+      description: Returns a **image** resource.
+      operationId: showImage
+      parameters:
+      - name: id
+        in: path
+        description: Image Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+        "404":
+          description: Image not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Images
+      summary: Delete an image
+      description: Delete an **image** resource.
+      operationId: deleteImage
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Image not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Images
+      summary: Update an image
+      description: Update an **image** resource.
+      operationId: updateImage
+      parameters:
+      - name: id
+        in: path
+        description: Image Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: images
+                    id: 1
+                    relationships:
+                      imageable:
+                        data:
+                          type: articles
+                          id: 1
+                    links:
+                      self: https://api.restorit.fr/images/1
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ImageResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /negociations:
+    get:
+      tags:
+      - Negociations
+      summary: Get a list of negociations
+      description: Return a collection of **negociation** resources.
+      operationId: indexNegociations
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationsResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Negociations
+      summary: Store a negociation
+      description: Create an **negociation** resource.
+      operationId: storeNegociation
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/NegociationRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    id: 1
+                    attributes:
+                      price: 130
+                    links:
+                      self: https://api.restorit.fr/negociations/1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /negociations/{id}:
+    get:
+      tags:
+      - Negociations
+      summary: Get a negociation
+      description: Returns an **negociation** resource.
+      operationId: showNegociation
+      parameters:
+      - name: id
+        in: path
+        description: Negociation Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationResponse'
+        "404":
+          description: Evaluation not found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Negociations
+      summary: Delete a negociation
+      description: Delete a **negociation** resource.
+      operationId: deleteNegociation
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Negociation not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Negociations
+      summary: Update an negociation
+      description: Update an **negociation** resource.
+      operationId: updateNegociation
+      parameters:
+      - name: id
+        in: path
+        description: Negociation Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/NegociationRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: negociations
+                    id: 1
+                    attributes:
+                      price: 130
+                    links:
+                      self: https://api.restorit.fr/negociations/1
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NegociationResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /evaluations:
+    get:
+      tags:
+      - Evaluations
+      summary: Get a list of evaluations
+      description: Return a collection of **evaluation** resources.
+      operationId: indexEvaluations
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationsResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Evaluations
+      summary: Store an evaluation
+      description: Create an **evaluation** resource.
+      operationId: storeEvaluation
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/EvaluationRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    attributes:
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+                    relationships:
+                      article:
+                        data:
+                          type: articles
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /evaluations/{id}:
+    get:
+      tags:
+      - Evaluations
+      summary: Get an evaluation
+      description: Returns an **evaluation** resource.
+      operationId: showEvaluation
+      parameters:
+      - name: id
+        in: path
+        description: Evaluation Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        "404":
+          description: Evaluation not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Evaluations
+      summary: Delete an evaluation
+      description: Delete a **evaluation** resource.
+      operationId: deleteEvaluation
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Evaluation not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Evaluations
+      summary: Update an evaluation
+      description: Update an **evaluation** resource.
+      operationId: updateEvaluation
+      parameters:
+      - name: id
+        in: path
+        description: Evaluation Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/EvaluationRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: evaluations
+                    id: 1
+                    attributes:
+                      createdAt: 2020-02-02 00:0:00
+                      updatedAt: 2020-02-02 00:0:00
+                      comment: Maybe this is a problem in the graphic card...
+                      cost: 4
+                      difficulty: 1
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/evaluations/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /sales:
+    get:
+      tags:
+      - Sales
+      summary: Get a list of sales
+      description: Return a collection of **sale** resources.
+      operationId: indexSales
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SalesResponse'
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Sales
+      summary: Store a sale
+      description: Create an **sale** resource.
+      operationId: storeSale
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: sales
+                    relationships:
+                      negociation:
+                        data:
+                          type: negociation
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /sales/{id}:
+    get:
+      tags:
+      - Sales
+      summary: Get a sale
+      description: Returns an **sale** resource.
+      operationId: showSale
+      parameters:
+      - name: id
+        in: path
+        description: Sale Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "404":
+          description: Sale not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Sales
+      summary: Delete a sale
+      description: Delete a **sale** resource.
+      operationId: deleteSale
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Sale not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Sales
+      summary: Update a sale
+      description: Update a **sale** resource.
+      operationId: updateSale
+      parameters:
+      - name: id
+        in: path
+        description: Sale Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: sales
+                    id: 1
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/sales/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /options:
+    get:
+      tags:
+      - Options
+      summary: Get a list of options
+      description: Return a collection of **option** resources.
+      operationId: indexOptions
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/OptionsResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Options
+      summary: Store an option
+      description: Create an **option** resource.
+      operationId: storeOption
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/OptionRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: options
+                    attributes:
+                      name: Apple
+                    relationships:
+                      criterion:
+                        data:
+                          type: criteria
+                          id: 1
+                      parents:
+                        data:
+                        - type: options
+                          id: 2
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/OptionResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /options/{id}:
+    get:
+      tags:
+      - Options
+      summary: Get an option
+      description: Returns an **option** resource.
+      operationId: showOption
+      parameters:
+      - name: id
+        in: path
+        description: Option Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/OptionResponse'
+        "404":
+          description: Option not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Options
+      summary: Delete an option
+      description: Delete a **option** resource.
+      operationId: deleteOption
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/OptionResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Option not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Options
+      summary: Update an option
+      description: Update an **option** resource.
+      operationId: updateOption
+      parameters:
+      - name: id
+        in: path
+        description: Option Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/OptionRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                  - type: options
+                    id: 1
+                    attributes:
+                      name: Apple
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/options/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/OptionResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /repairs:
+    get:
+      tags:
+      - Repairs
+      summary: Get a list of repairs
+      description: Return a collection of **repair** resources.
+      operationId: indexRepairs
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/RepairsResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Repairs
+      summary: Store a repair
+      description: Create a **repair** resource
+      operationId: storeRepair
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/RepairRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                  - type: repairs
+                    id: 1
+                    attributes:
+                      comment: I changed the broken screen and now it's ok !
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/repairs/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/RepairResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /repairs/{id}:
+    get:
+      tags:
+      - Repairs
+      summary: Get a repair
+      description: Returns an **repair** resource.
+      operationId: showRepair
+      parameters:
+      - name: id
+        in: path
+        description: Break Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/RepairResponse'
+        "404":
+          description: Repair not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Repairs
+      summary: Delete a repair
+      description: Delete a **repair** resource.
+      operationId: deleteRepair
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/RepairResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Repair not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Repairs
+      summary: Update a repair
+      description: Update an **repair** resource.
+      operationId: updateRepair
+      parameters:
+      - name: id
+        in: path
+        description: Break Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/RepairRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                  - type: repairs
+                    id: 1
+                    attributes:
+                      comment: I changed the broken screen and now it's ok !
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/repairs/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/RepairResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /breaks:
+    get:
+      tags:
+      - Breaks
+      summary: Get a list of breaks
+      description: Return a collection of **break** resources.
+      operationId: indexBreaks
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BreaksResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Breaks
+      summary: Store a break
+      description: Create a **break** resource
+      operationId: storeBreak
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/BreakRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    attributes:
+                      comment: The camera is not working anymore...
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BreakResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /breaks/{id}:
+    get:
+      tags:
+      - Breaks
+      summary: Get a break
+      description: Returns an **break** resource.
+      operationId: showBreak
+      parameters:
+      - name: id
+        in: path
+        description: Break Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BreakResponse'
+        "404":
+          description: Break not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Breaks
+      summary: Delete a break
+      description: Delete a **break** resource.
+      operationId: deleteBreak
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BreakResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Break not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Breaks
+      summary: Update a break
+      description: Update an **break** resource.
+      operationId: updateBreak
+      parameters:
+      - name: id
+        in: path
+        description: Break Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/BreakRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: breaks
+                    id: 1
+                    attributes:
+                      comment: The camera is not working anymore...
+                    relationships: {}
+                    links:
+                      self: https://api.restorit.fr/breaks/1
+                    meta: {}
+                  links: {}
+                  meta: {}
+                  included: []
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BreakResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /criteria:
+    get:
+      tags:
+      - Criteria
+      summary: Get a list of criteria
+      description: Return a collection of **criterion** resources.
+      operationId: indexCriteria
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CriteriaResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Criteria
+      summary: Store a criterion
+      description: Create a **criterion** resource
+      operationId: storeCriterion
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/CriterionRequest'
+            examples:
+              Example:
+                description: Here is an example of the body when setting up a selection
+                  criterion
+                value:
+                  data:
+                    type: criteria
+                    attributes:
+                      name: brand
+                      priority: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CriterionResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /criteria/{id}:
+    get:
+      tags:
+      - Criteria
+      summary: Get a criterion
+      description: Returns an **criterion** resource.
+      operationId: showCriterion
+      parameters:
+      - name: id
+        in: path
+        description: Criterion Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CriterionResponse'
+        "404":
+          description: Criterion not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Criteria
+      summary: Delete a criterion
+      description: Delete a **criterion** resource.
+      operationId: deleteCriterion
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CriterionResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Article not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Criteria
+      summary: Update a criterion
+      description: Update an **article** resource.
+      operationId: updateCriterion
+      parameters:
+      - name: id
+        in: path
+        description: Criterion Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: articles
+                    attributes:
+                      name: Selling an iPhone 7S broken
+                      comment: Hello, I am selling this iPhone 7S because the screen
+                        is broken. Please contact me by email. Thx ! :)
+                      price: 120
+                    relationships:
+                      images:
+                      - data:
+                          type: images
+                          id: 1
+                      - data:
+                          type: images
+                          id: 2
+                      options:
+                      - data:
+                          type: options
+                          id: 45
+                      - data:
+                          type: options
+                          id: 89
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/CriterionResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /articles:
+    get:
+      tags:
+      - Articles
+      summary: Get a list of articles
+      description: Returns a collection of **article** resources.
+      operationId: indexArticles
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ArticlesResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Articles
+      summary: Store an article
+      description: Create an **article** resource.
+      operationId: storeArticle
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+            examples:
+              Creation of a broken article:
+                value:
+                  data:
+                    type: articles
+                    attributes:
+                      name: Selling an iPhone 7S broken
+                      comment: Hello, I am selling this iPhone 7S because the screen
+                        is broken. Please contact me by email. Thx ! :)
+                      price: 120
+                    relationships:
+                      event:
+                        data:
+                          type: breaks
+                          id: 42
+                      images:
+                      - data:
+                          type: images
+                          id: 1
+                      - data:
+                          type: images
+                          id: 2
+                      options:
+                      - data:
+                          type: options
+                          id: 45
+                      - data:
+                          type: options
+                          id: 89
+              Creation of a repaired article:
+                value:
+                  data:
+                    type: articles
+                    attributes:
+                      name: Selling an iPhone 7S repaired
+                      comment: Hello, I just repaired the screen of this iPhone 7S!
+                      price: 320
+                    relationships:
+                      event:
+                        data:
+                          type: repair
+                          id: 109
+                      image:
+                      - data:
+                          type: images
+                          id: 1
+                      - data:
+                          type: images
+                          id: 2
+                      options:
+                      - data:
+                          type: options
+                          id: 45
+                      - data:
+                          type: options
+                          id: 89
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /articles/{id}:
+    get:
+      tags:
+      - Articles
+      summary: Get an article
+      description: Returns an **article** resource.
+      operationId: showArticle
+      parameters:
+      - name: id
+        in: path
+        description: Article Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        "404":
+          description: Article not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Articles
+      summary: Delete an article
+      description: Delete an **article** resource.
+      operationId: deleteArticle
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Article not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Articles
+      summary: Update an article
+      description: Update an **article** resource.
+      operationId: updateArticle
+      parameters:
+      - name: id
+        in: path
+        description: Article Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: articles
+                    attributes:
+                      name: Selling an iPhone 7S broken
+                      comment: Hello, I am selling this iPhone 7S because the screen
+                        is broken. Please contact me by email. Thx ! :)
+                      price: 120
+                    relationships:
+                      images:
+                      - data:
+                          type: images
+                          id: 1
+                      - data:
+                          type: images
+                          id: 2
+                      options:
+                      - data:
+                          type: options
+                          id: 45
+                      - data:
+                          type: options
+                          id: 89
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /markets:
+    get:
+      tags:
+      - Markets
+      summary: Get a list of markets
+      description: Returns a collection of **market** resources.
+      operationId: indexMarkets
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MarketsResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Markets
+      summary: Store a market
+      description: Create a **market** resource.
+      operationId: storeMarket
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/MarketRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: markets
+                    attributes:
+                      name: Ebay
+                      url: http://ebay.fr/
+                      priceXmlPath: //*[@id="prcIsum"]
+                    relationships: {}
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MarketResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /markets/{id}:
+    get:
+      tags:
+      - Markets
+      summary: Get a market
+      description: Returns a **market** resource.
+      operationId: showMarket
+      parameters:
+      - name: id
+        in: path
+        description: Market Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MarketResponse'
+        "404":
+          description: Market not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Markets
+      summary: Delete a market
+      description: Delete a **market** resource.
+      operationId: deleteMarket
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MarketResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Market not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Markets
+      summary: Update a market
+      description: Update a **market** resource.
+      operationId: updateMarket
+      parameters:
+      - name: id
+        in: path
+        description: Market Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/MarketRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: markets
+                    attributes:
+                      name: Ebay
+                      url: http://ebay.fr/
+                      priceXmlPath: //*[@id="prcIsum"]
+                    relationships: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/MarketResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /products:
+    get:
+      tags:
+      - Products
+      summary: Get a list of products
+      description: Returns a collection of **product** resources.
+      operationId: indexProducts
+      parameters:
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Comma separated list of fields to sort. Please refer to the JSON
+          API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Array of filter. Please refer to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+        "422":
+          description: Unprocessable Entity
+    post:
+      tags:
+      - Products
+      summary: Store a product
+      description: Create a **product** resource.
+      operationId: storeProduct
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: products
+                    attributes:
+                      name: Kit Iphone 11
+                      url: itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521
+                      type: REPAIR_KIT
+                    relationships:
+                      market:
+                        data:
+                          type: markets
+                          id: 1
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /products/{id}:
+    get:
+      tags:
+      - Products
+      summary: Get a product
+      description: Returns a **product** resource.
+      operationId: showProduct
+      parameters:
+      - name: id
+        in: path
+        description: Product Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "404":
+          description: Product not found
+        "422":
+          description: Unprocessable Entity
+    delete:
+      tags:
+      - Products
+      summary: Delete a product
+      description: Delete a **product** resource.
+      operationId: deleteProduct
+      parameters:
+      - name: id
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "401":
+          description: Not Authenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Product not found
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Products
+      summary: Update a product
+      description: Update a **product** resource.
+      operationId: updateProduct
+      parameters:
+      - name: id
+        in: path
+        description: Product Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/MarketRequest'
+            examples:
+              Example:
+                value:
+                  data:
+                    type: products
+                    attributes:
+                      name: Iphone X écran
+                    relationships: {}
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /users:
+    post:
+      tags:
+      - Users
+      summary: Store a User
+      description: Create a **user** resource.
+      operationId: storeUser
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "422":
+          description: Unprocessable Entity
+  /users/{id}:
+    get:
+      tags:
+      - Users
+      summary: Get user informations
+      description: Returns a **user** resource.
+      operationId: showUser
+      parameters:
+      - name: id
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: Comma separated list of relationships to include. Please refer
+          to the JSON API article
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "404":
+          description: User not found
+        "422":
+          description: Unprocessable Entity
+    patch:
+      tags:
+      - Users
+      summary: Update user informations
+      description: Update a **user** resource.
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        description: User Id | 'me' | 'self'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Not Allowed
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+      security:
+      - bearerAuth: []
+  /login:
+    post:
+      tags:
+      - Authentication
+      summary: Login
+      description: Get access token for existing user
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResource'
+        "401":
+          description: Invalid credentials
+        "422":
+          description: Unprocessable Entity
+  /email/resend:
+    get:
+      tags:
+      - Authentication
+      summary: Email verification
+      description: Ask to receive an email to verify it thanks to a link
+      operationId: emailVerification
+      responses:
+        "200":
+          description: Email verification link sent on your email id
+        "400":
+          description: Email already verified.
+      security:
+      - bearerAuth: []
+  /password/email:
+    post:
+      tags:
+      - Authentication
+      summary: Forgot password request
+      description: Ask for a reset password link
+      operationId: passwordRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "200":
+          description: Reset password link sent on your email id.
+        "422":
+          description: Unprocessable Entity
+  /password/reset:
+    post:
+      tags:
+      - Authentication
+      summary: Forgot password reset
+      description: Reset a password
+      operationId: passwordReset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_1'
+        required: true
+      responses:
+        "200":
+          description: Password has been successfully changed
+        "401":
+          description: Invalid token
+        "422":
+          description: Unprocessable Entity
+components:
+  schemas:
+    AuthRequest:
+      title: Auth Request
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: john.smith@gmail.com
+        password:
+          type: string
+          example: thisisapassword
+      description: This resource represents a login request.
+      x-tags:
+      - Authentication
+    TokenResource:
+      title: Token Resource
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Access token to use for authentication
+        tokenType:
+          type: string
+          description: Token type
+          example: Bearer
+        expiresIn:
+          type: string
+          description: Expiration Date (TTL)
+      x-tags:
+      - Authentication
+    UserRequest:
+      title: User Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserRequest_data'
+      description: This resource represents a user in the marketplace.
+      x-tags:
+      - Users
+    UserResponse:
+      title: User Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This resource represents a user in the marketplace.
+      x-tags:
+      - Users
+    UsersResponse:
+      title: Users Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResource'
+      x-tags:
+      - Users
+    UserResource:
+      title: User Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: users
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/UserResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/UserResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Users
+    MarketRequest:
+      title: Market Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MarketRequest_data'
+      description: This resource represents an market in the marketplace
+      x-tags:
+      - Markets
+    MarketResponse:
+      title: Market Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MarketResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This resource represents a market in the marketplace
+      x-tags:
+      - Markets
+    MarketsResponse:
+      title: Markets Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketResource'
+      x-tags:
+      - Markets
+    MarketResource:
+      title: Market Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: markets
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/MarketRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/MarketResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Markets
+    ProductRequest:
+      title: Product Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductRequest_data'
+      description: This resource represents a product in the marketplace
+      x-tags:
+      - Products
+    ProductResponse:
+      title: Product Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This resource represents a product in the marketplace
+      x-tags:
+      - Products
+    ProductsResponse:
+      title: Products Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResource'
+      x-tags:
+      - Products
+    ProductResource:
+      title: Product Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: products
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ProductResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/ProductResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Products
+    ArticleRequest:
+      title: Article Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ArticleRequest_data'
+      description: This resource represents an article in the marketplace. It must
+        be linked to a event of type **break** or **repair** to be created.
+      x-tags:
+      - Articles
+    ArticleResponse:
+      title: Article Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ArticleResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This resource represents an article in the marketplace. It must
+        be linked to a event of type **break** or **repair** to be created.
+      x-tags:
+      - Articles
+    ArticlesResponse:
+      title: Articles Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleResource'
+      x-tags:
+      - Articles
+    ArticleResource:
+      title: Article Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: articles
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ArticleResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/ArticleResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Articles
+    SaleRequest:
+      title: Sale Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SaleRequest_data'
+      description: This resource represents an sale in the marketplace.
+      x-tags:
+      - Sales
+    SaleResponse:
+      title: Sale Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SaleResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This resource represents a sale.
+      x-tags:
+      - Sales
+    SalesResponse:
+      title: Sales Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleResource'
+      x-tags:
+      - Sales
+    SaleResource:
+      title: Sale Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: sales
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/SaleResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/SaleResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Sales
+    CriterionRequest:
+      title: Criterion Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CriterionRequest_data'
+      description: This represents a criterion. **criterion** and **option** resources
+        are used to classify **article** resources in many categories.
+      x-tags:
+      - Criteria
+    CriterionResponse:
+      title: Criterion Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CriterionResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/OptionResource'
+      description: This represents a criterion. **criterion** and **option** resources
+        are used to classify **article** resources in many categories.
+      x-tags:
+      - Criteria
+    CriteriaResponse:
+      title: Criteria Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CriterionResource'
+      x-tags:
+      - Criteria
+    CriterionResource:
+      title: Criterion Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: criteria
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/CriterionRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/CriterionResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Criteria
+    BreakRequest:
+      title: Break Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BreakRequest_data'
+      description: This represents a broken object. You need to create one if you
+        want to create a broken object article then.
+      x-tags:
+      - Breaks
+    BreakResponse:
+      title: Break Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BreakResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This represents a broken object. You need to create one if you
+        want to create a broken object article then.
+      x-tags:
+      - Breaks
+    BreaksResponse:
+      title: Breaks Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BreakResource'
+      x-tags:
+      - Breaks
+    BreakResource:
+      title: Break Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: breaks
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/BreakRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/BreakResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Breaks
+    RepairRequest:
+      title: Repair Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RepairRequest_data'
+      description: This represents a repaired object. You need to create one if you
+        want to create a repaired object article then.
+      x-tags:
+      - Repairs
+    RepairResponse:
+      title: Repair Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RepairResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This represents a repaired object. You need to create one if you
+        want to create a repaired object article then.
+      x-tags:
+      - Repairs
+    RepairsResponse:
+      title: Repairs Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepairResource'
+      x-tags:
+      - Repairs
+    RepairResource:
+      title: Repair Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: repairs
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/RepairRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/RepairResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Repairs
+    OptionRequest:
+      title: Option Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OptionRequest_data'
+      description: This represents a criterion option. **criterion** and **option**
+        resources are used to classify **article** resources in many categories.
+      x-tags:
+      - Options
+    OptionResponse:
+      title: Option Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OptionResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This represents a criterion option. **criterion** and **option**
+        resources are used to classify **article** resources in many categories.
+      x-tags:
+      - Options
+    OptionsResponse:
+      title: Options Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionResource'
+      x-tags:
+      - Options
+    OptionResource:
+      title: Option Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: options
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/OptionRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/OptionResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Options
+    EvaluationRequest:
+      title: Evaluation Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EvaluationRequest_data'
+      description: This represents an article evaluation.
+      x-tags:
+      - Evaluations
+    EvaluationResponse:
+      title: Evaluation Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EvaluationResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: This represents an article evaluation.
+      x-tags:
+      - Evaluations
+    EvaluationsResponse:
+      title: Evaluations Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvaluationResource'
+      x-tags:
+      - Evaluations
+    EvaluationResource:
+      title: Evaluation Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: evaluations
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/EvaluationResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/BreakResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Evaluations
+    NegociationRequest:
+      title: Negociation Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NegociationRequest_data'
+      description: Represent an article purchase proposition, it can be applied to
+        any article.
+      x-tags:
+      - Negociations
+    NegociationResponse:
+      title: Negociation Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/NegociationResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent an article purchase proposition, it can be applied to
+        any article.
+      x-tags:
+      - Negociations
+    NegociationsResponse:
+      title: Negociations Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NegociationResource'
+      x-tags:
+      - Negociations
+    NegociationResource:
+      title: Negociation Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: negociations
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/NegociationResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/NegociationResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Negocations
+    MessageRequest:
+      title: Message Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MessageRequest_data'
+      description: Represent a message that can be send in a given conversation
+      x-tags:
+      - Messages
+    MessageResponse:
+      title: Message Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MessageResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent a message
+      x-tags:
+      - Messages
+    MessagesResponse:
+      title: Messages Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageResource'
+      x-tags:
+      - Messages
+    MessageResource:
+      title: Message Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: messages
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/MessageResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/MessageResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Messages
+    ImageRequest:
+      title: Image Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ImageRequest_data'
+      description: Represent an image that can be attached to an article or a user
+      x-tags:
+      - Images
+    ImageResponse:
+      title: Image Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ImageResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent an image
+      x-tags:
+      - Images
+    ImagesResponse:
+      title: Images Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageResource'
+      x-tags:
+      - Images
+    ImageResource:
+      title: Image Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: images
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ImageResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/ImageResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Images
+    ConversationRequest:
+      title: Conversation Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConversationRequest_data'
+      description: Represent a conversation with a given user
+      x-tags:
+      - Conversations
+    ConversationResponse:
+      title: Conversation Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConversationResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent a conversation
+      x-tags:
+      - Conversations
+    ConversationsResponse:
+      title: Conversations Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversationResource'
+      x-tags:
+      - Conversations
+    ConversationResource:
+      title: Conversation Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: conversation
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ConversationResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/ConversationResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Conversations
+    BlockingRequest:
+      title: Blocking Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlockingRequest_data'
+      description: Represent a blocking between 2 users
+      x-tags:
+      - Blockings
+    BlockingResponse:
+      title: Blocking Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BlockingResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent a blocking
+      x-tags:
+      - Blockings
+    BlockingsResponse:
+      title: Blockings Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockingResource'
+      x-tags:
+      - Blockings
+    BlockingResource:
+      title: Blocking Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: blockings
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ConversationResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/BlockingResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Blockings
+    LikeRequest:
+      title: Like Request
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LikeRequest_data'
+      description: Represent a like on an article
+      x-tags:
+      - Likes
+    LikeResponse:
+      title: Like Response
+      required:
+      - data
+      - links
+      - meta
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LikeResource'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        included:
+          type: array
+          description: Array of included relationships. Please refer to the JSON API
+            article
+      description: Represent a like
+      x-tags:
+      - Likes
+    LikesResponse:
+      title: Likes Response
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LikeResource'
+      x-tags:
+      - Likes
+    LikeResource:
+      title: Like Resource
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: likes
+        id:
+          type: integer
+          description: ID of the resource
+          example: 42
+        attributes:
+          $ref: '#/components/schemas/ConversationResource_attributes'
+        relationships:
+          $ref: '#/components/schemas/LikeResource_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+      x-tags:
+      - Likes
+    MetaDataObject:
+      type: object
+      description: Meta Data of the resource
+      x-tags:
+      - Json Api
+    RelationshipObject:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/LinksObject'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/ResourceIdentifier'
+          - $ref: '#/components/schemas/ResourceIdentifierArray'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+      description: Relationship resource
+      x-tags:
+      - Json Api
+    LinksObject:
+      type: object
+      properties:
+        self:
+          type: string
+        related:
+          $ref: '#/components/schemas/LinksObject_related'
+      x-tags:
+      - Json Api
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResourceIdentifier_data'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+      x-tags:
+      - Json Api
+    ResourceIdentifierArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceIdentifier'
+      x-tags:
+      - Json Api
+    body:
+      type: object
+      properties:
+        email:
+          type: string
+          description: email where to send the reset link
+    body_1:
+      type: object
+      properties:
+        email:
+          type: string
+          description: email
+        token:
+          type: string
+          description: token (from email)
+        password:
+          type: string
+          description: new password
+        passwordConfirmation:
+          type: string
+          description: new password confirmation
+    UserRequest_data_attributes:
+      required:
+      - email
+      - name
+      - password
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Name of the user
+          example: John Smith
+        displayName:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Display Name of the user
+          example: Johnny
+        email:
+          maxLength: 256
+          minLength: 1
+          type: string
+          description: Email of the user
+          format: email
+          example: john.smith@gmail.com
+        showEmail:
+          type: boolean
+          description: If the user want to dislay his email
+          example: false
+        phone:
+          type: string
+          description: Phone number of the user
+          example: +33612345678
+        showPhone:
+          type: boolean
+          description: If the user want to dislay his phone
+          example: false
+        password:
+          maxLength: 256
+          minLength: 8
+          type: string
+          description: Password of the user
+          example: thisisapassword
+        passwordConfirmation:
+          maxLength: 256
+          minLength: 8
+          type: string
+          description: Password of the user repeated (required for the first set of
+            the password and each time the user want to change the mail or the current
+            password
+          example: thisisapassword
+    UserRequest_data_relationships:
+      type: object
+      properties:
+        avatar:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        address:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        articles:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+        evaluations:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+    UserRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: users
+        attributes:
+          $ref: '#/components/schemas/UserRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/UserRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    UserResource_attributes:
+      required:
+      - deletedAt
+      - displayName
+      - email
+      - emailVerifiedAt
+      - isBlocked
+      - isMe
+      - name
+      - phone
+      - showEmail
+      - showPhone
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Name of the user
+          example: John Smith
+        displayName:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Display Name of the user
+          example: Johnny
+        email:
+          maxLength: 256
+          minLength: 1
+          type: string
+          description: Email of the user
+          format: email
+          example: john.smith@gmail.com
+        showEmail:
+          type: boolean
+          description: If the user want to dislay his email
+          example: false
+        phone:
+          type: string
+          description: Phone number of the user
+          example: +33612345678
+        showPhone:
+          type: boolean
+          description: If the user want to dislay his phone
+          example: false
+        isMe:
+          type: boolean
+          description: If the user requested is the one authenticated
+          example: true
+        isBlocked:
+          type: boolean
+          description: If the user requested is blocked by the user authenticated
+          example: false
+    UserResource_relationships:
+      type: object
+      properties:
+        avatar:
+          $ref: '#/components/schemas/RelationshipObject'
+        address:
+          $ref: '#/components/schemas/RelationshipObject'
+        articles:
+          $ref: '#/components/schemas/RelationshipObject'
+        availableArticles:
+          $ref: '#/components/schemas/RelationshipObject'
+        evaluations:
+          $ref: '#/components/schemas/RelationshipObject'
+        messages:
+          $ref: '#/components/schemas/RelationshipObject'
+        conversations:
+          $ref: '#/components/schemas/RelationshipObject'
+        repairedArticles:
+          $ref: '#/components/schemas/RelationshipObject'
+        negociations:
+          $ref: '#/components/schemas/RelationshipObject'
+        sales:
+          $ref: '#/components/schemas/RelationshipObject'
+        likes:
+          $ref: '#/components/schemas/RelationshipObject'
+        blockings:
+          $ref: '#/components/schemas/RelationshipObject'
+    MarketRequest_data_attributes:
+      required:
+      - name
+      - priceXmlPath
+      - url
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          type: string
+          description: Name of the market
+          example: Ebay
+        url:
+          maxLength: 256
+          type: string
+          description: Base url of the market
+          example: http://ebay.fr/
+        priceXmlPath:
+          maximum: 512
+          type: string
+          description: Xml Path for articles price in this market
+          example: //*[@id="prcIsum"]
+    MarketRequest_data_relationships:
+      type: object
+      properties:
+        products:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+    MarketRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: markets
+        attributes:
+          $ref: '#/components/schemas/MarketRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/MarketRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    MarketResource_relationships:
+      type: object
+      properties:
+        products:
+          $ref: '#/components/schemas/RelationshipObject'
+    ProductRequest_data_attributes:
+      required:
+      - name
+      - type
+      - url
+      type: object
+      properties:
+        name:
+          maxLength: 256
+          type: string
+          description: Name of the product
+          example: Kit iphone X
+        url:
+          type: string
+          description: url of the product - market base url
+          example: itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521
+        type:
+          type: string
+          description: REPAIR_KIT or SPARE_PART
+          example: REPAIR_KIT
+    ProductRequest_data_relationships:
+      type: object
+      properties:
+        market:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    ProductRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: products
+        attributes:
+          $ref: '#/components/schemas/ProductRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/ProductRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    ProductResource_attributes:
+      required:
+      - name
+      - type
+      - url
+      type: object
+      properties:
+        name:
+          maxLength: 256
+          type: string
+          description: Name of the product
+          example: Iphone X kit
+        url:
+          type: string
+          description: url of the product - base url of the market
+          example: itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521
+        type:
+          type: string
+          description: REPAIR_KIT or SPARE_PART
+          example: REPAIR_KIT
+    ProductResource_relationships:
+      type: object
+      properties:
+        market:
+          $ref: '#/components/schemas/RelationshipObject'
+    ArticleRequest_data_attributes:
+      required:
+      - comment
+      - price
+      - title
+      type: object
+      properties:
+        title:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Title of the article
+          example: I sell an iPhone 7S
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: More details about the article
+          example: I only want to be contacted by email. Thanks.
+        price:
+          maximum: 100000
+          minimum: 0
+          type: number
+          description: Price of the article
+          example: 32
+    ArticleRequest_data_relationships:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+        event:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        images:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+        evaluations:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+        sale:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        negociations:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+    ArticleRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: articles
+        attributes:
+          $ref: '#/components/schemas/ArticleRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/ArticleRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    ArticleResource_attributes_evaluation:
+      required:
+      - cost
+      - count
+      - difficulty
+      type: object
+      properties:
+        cost:
+          type: number
+          description: Average cost of repair
+          example: 2.2
+        difficulty:
+          type: number
+          description: Average difficulty of repair
+          example: 3.6
+        count:
+          type: number
+          description: Number of evaluations
+          example: 15
+      description: Average evaluation of the article
+    ArticleResource_attributes:
+      required:
+      - broken
+      - comment
+      - createdAt
+      - evaluation
+      - paid
+      - price
+      - repair
+      - sold
+      - title
+      - updatedAt
+      type: object
+      properties:
+        title:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Title of the article
+          example: I sell an iPhone 7S
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: More details about the article
+          example: I only want to be contacted by email. Thanks.
+        price:
+          maximum: 100000
+          minimum: 0
+          type: number
+          description: Price of the article
+          example: 32
+        evaluation:
+          $ref: '#/components/schemas/ArticleResource_attributes_evaluation'
+        broken:
+          type: boolean
+          description: True if the article is a broken article
+          example: true
+        repair:
+          type: boolean
+          description: True if the article is a repaired article
+          example: true
+        sold:
+          type: boolean
+          description: True if the article is sold
+          example: false
+        paid:
+          type: boolean
+          description: True if the article is paid
+          example: false
+    ArticleResource_relationships:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/RelationshipObject'
+        event:
+          $ref: '#/components/schemas/RelationshipObject'
+        images:
+          $ref: '#/components/schemas/RelationshipObject'
+        evaluations:
+          $ref: '#/components/schemas/RelationshipObject'
+        sale:
+          $ref: '#/components/schemas/RelationshipObject'
+        negociations:
+          $ref: '#/components/schemas/RelationshipObject'
+        waitingNegociations:
+          $ref: '#/components/schemas/RelationshipObject'
+        myNegociation:
+          $ref: '#/components/schemas/RelationshipObject'
+        declinedNegociations:
+          $ref: '#/components/schemas/RelationshipObject'
+        author:
+          $ref: '#/components/schemas/RelationshipObject'
+        myEvaluation:
+          $ref: '#/components/schemas/RelationshipObject'
+        likes:
+          $ref: '#/components/schemas/RelationshipObject'
+    SaleRequest_data_relationships:
+      type: object
+      properties:
+        negociation:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    SaleRequest_data:
+      required:
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: sales
+        relationships:
+          $ref: '#/components/schemas/SaleRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    SaleResource_attributes_paypal:
+      required:
+      - orderId
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Paypal order id
+          example: 5O190127TN364715T
+      description: Paypal order id only visible for the negociator
+    SaleResource_attributes:
+      required:
+      - createdAt
+      - paid
+      - received
+      - updatedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        paid:
+          type: boolean
+          description: True if the article has been paid
+          example: true
+        received:
+          type: boolean
+          description: True if the article has been received
+          example: false
+        paypal:
+          $ref: '#/components/schemas/SaleResource_attributes_paypal'
+    SaleResource_relationships:
+      type: object
+      properties:
+        seller:
+          $ref: '#/components/schemas/RelationshipObject'
+        purchaser:
+          $ref: '#/components/schemas/RelationshipObject'
+        article:
+          $ref: '#/components/schemas/RelationshipObject'
+        negociation:
+          $ref: '#/components/schemas/RelationshipObject'
+    CriterionRequest_data_attributes:
+      required:
+      - name
+      - priority
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Name of the criterion
+          example: brand
+        priority:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Display priority of the criterion
+          example: "1"
+    CriterionRequest_data_relationships:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+    CriterionRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: criteria
+        attributes:
+          $ref: '#/components/schemas/CriterionRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/CriterionRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    CriterionResource_relationships:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/RelationshipObject'
+    BreakRequest_data_attributes:
+      required:
+      - comment
+      type: object
+      properties:
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: Comment giving the details of the breakage
+          example: The window is broken and needs a replacement
+    BreakRequest_data_relationships:
+      type: object
+      properties:
+        article:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        author:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    BreakRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: breaks
+        attributes:
+          $ref: '#/components/schemas/BreakRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/BreakRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    BreakResource_relationships:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/RelationshipObject'
+        article:
+          $ref: '#/components/schemas/RelationshipObject'
+    RepairRequest_data_attributes:
+      required:
+      - comment
+      type: object
+      properties:
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: Details of the repair
+          example: I changed the broken screen and now it is ok !
+    RepairRequest_data_relationships:
+      type: object
+      properties:
+        article:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        break:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    RepairRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: repairs
+        attributes:
+          $ref: '#/components/schemas/RepairRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/RepairRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    RepairResource_relationships:
+      type: object
+      properties:
+        break:
+          $ref: '#/components/schemas/RelationshipObject'
+        author:
+          $ref: '#/components/schemas/RelationshipObject'
+        article:
+          $ref: '#/components/schemas/RelationshipObject'
+    OptionRequest_data_attributes:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 1
+          type: string
+          description: Name of the option
+          example: Apple
+    OptionRequest_data_relationships:
+      type: object
+      properties:
+        criterion:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        parents:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+        children:
+          $ref: '#/components/schemas/ResourceIdentifierArray'
+    OptionRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: options
+        attributes:
+          $ref: '#/components/schemas/OptionRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/OptionRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    OptionResource_relationships:
+      type: object
+      properties:
+        criterion:
+          $ref: '#/components/schemas/RelationshipObject'
+        parents:
+          $ref: '#/components/schemas/RelationshipObject'
+        children:
+          $ref: '#/components/schemas/RelationshipObject'
+    EvaluationRequest_data_attributes:
+      required:
+      - comment
+      type: object
+      properties:
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: Comment of the evaluation
+          example: Maybe this is a problem in the graphic card...
+        cost:
+          maximum: 5
+          minimum: 0
+          type: integer
+          description: Cost of repair on a scale of 0 to 5
+          example: 2
+        difficulty:
+          maximum: 5
+          minimum: 0
+          type: integer
+          description: Cost of repair on a scale of 0 to 5
+          example: 2
+    EvaluationRequest_data_relationships:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        article:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    EvaluationRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: evaluations
+        attributes:
+          $ref: '#/components/schemas/EvaluationRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/EvaluationRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    EvaluationResource_attributes:
+      required:
+      - comment
+      - cost
+      - createdAt
+      - difficulty
+      - updatedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        comment:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: Comment of the evaluation
+          example: Maybe this is a problem in the graphic card...
+        cost:
+          maximum: 5
+          minimum: 0
+          type: integer
+          description: Cost of repair on a scale of 0 to 5
+          example: 2
+        difficulty:
+          maximum: 5
+          minimum: 0
+          type: integer
+          description: Cost of repair on a scale of 0 to 5
+          example: 2
+    NegociationRequest_data_attributes:
+      required:
+      - price
+      type: object
+      properties:
+        price:
+          maximum: 100000
+          minimum: 0
+          type: number
+          description: The proposed price for the article
+          example: 120
+        accepted:
+          type: boolean
+    NegociationRequest_data_relationships:
+      type: object
+      properties:
+        sale:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        message:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        negociator:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        article:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    NegociationRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: negociations
+        attributes:
+          $ref: '#/components/schemas/NegociationRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/NegociationRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    NegociationResource_attributes:
+      required:
+      - accepted
+      - declined
+      - price
+      type: object
+      properties:
+        price:
+          maximum: 100000
+          minimum: 0
+          type: number
+          description: The proposed price for the article
+          example: 120
+        declined:
+          type: boolean
+          example: false
+        accepted:
+          type: boolean
+          example: true
+    NegociationResource_relationships:
+      type: object
+      properties:
+        negociator:
+          $ref: '#/components/schemas/RelationshipObject'
+        article:
+          $ref: '#/components/schemas/RelationshipObject'
+        message:
+          $ref: '#/components/schemas/RelationshipObject'
+    MessageRequest_data_attributes:
+      required:
+      - text
+      type: object
+      properties:
+        text:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: The text of the message
+          example: Hello
+    MessageRequest_data_relationships:
+      type: object
+      properties:
+        conversation:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        negociation:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        receiver:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        sender:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    MessageRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: messages
+        attributes:
+          $ref: '#/components/schemas/MessageRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/MessageRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    MessageResource_attributes:
+      required:
+      - createdAt
+      - text
+      - updatedAt
+      type: object
+      properties:
+        text:
+          maxLength: 2048
+          minLength: 1
+          type: string
+          description: Text of the message
+          example: Hello
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    MessageResource_relationships:
+      type: object
+      properties:
+        author:
+          $ref: '#/components/schemas/RelationshipObject'
+        negociation:
+          $ref: '#/components/schemas/RelationshipObject'
+        conversation:
+          $ref: '#/components/schemas/RelationshipObject'
+    ImageRequest_data_attributes:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: string
+          description: Base 64 content of the image
+          example: base64ImageContent
+    ImageRequest_data_relationships:
+      type: object
+      properties:
+        imageable:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    ImageRequest_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: images
+        attributes:
+          $ref: '#/components/schemas/ImageRequest_data_attributes'
+        relationships:
+          $ref: '#/components/schemas/ImageRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    ImageResource_attributes:
+      required:
+      - link
+      type: object
+      properties:
+        link:
+          type: string
+          description: Link of the image
+          example: https://picsum.photos/200
+    ImageResource_relationships:
+      type: object
+      properties:
+        auhtor:
+          $ref: '#/components/schemas/RelationshipObject'
+        imageable:
+          $ref: '#/components/schemas/RelationshipObject'
+    ConversationRequest_data_relationships:
+      type: object
+      properties:
+        user1:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        user2:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    ConversationRequest_data:
+      required:
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: conversations
+        relationships:
+          $ref: '#/components/schemas/ConversationRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    ConversationResource_attributes:
+      required:
+      - createdAt
+      - updatedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ConversationResource_relationships:
+      type: object
+      properties:
+        users:
+          $ref: '#/components/schemas/RelationshipObject'
+        lastMessage:
+          $ref: '#/components/schemas/RelationshipObject'
+        messages:
+          $ref: '#/components/schemas/RelationshipObject'
+    BlockingRequest_data_relationships:
+      type: object
+      properties:
+        blockedUser:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    BlockingRequest_data:
+      required:
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: blockings
+        relationships:
+          $ref: '#/components/schemas/BlockingRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    BlockingResource_relationships:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/RelationshipObject'
+        blockedUser:
+          $ref: '#/components/schemas/RelationshipObject'
+    LikeRequest_data_relationships:
+      type: object
+      properties:
+        article:
+          $ref: '#/components/schemas/ResourceIdentifier'
+    LikeRequest_data:
+      required:
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the resource
+          example: likes
+        relationships:
+          $ref: '#/components/schemas/LikeRequest_data_relationships'
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+        links:
+          $ref: '#/components/schemas/LinksObject'
+    LikeResource_relationships:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/RelationshipObject'
+        article:
+          $ref: '#/components/schemas/RelationshipObject'
+    LinksObject_related:
+      type: object
+      properties:
+        href:
+          type: string
+          description: a string containing the link’s URL.
+        meta:
+          $ref: '#/components/schemas/MetaDataObject'
+    ResourceIdentifier_data:
+      type: object
+      properties:
+        type:
+          type: string
+          example: articles
+        id:
+          type: number
+          example: 42
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
