@@ -3250,7 +3250,7 @@ components:
                   example: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
                 type:
                   type: string
-                  description: 'REPAIR_KIT or SPARE_KIT'
+                  description: 'REPAIR_KIT or SPARE_PART'
                   example: 'REPAIR_KIT'
             relationships:
               type: object
@@ -3329,7 +3329,7 @@ components:
               example: 'itm/ECRAN-LCD-OLED-RETINA-VITRE-TACTILE-SUR-CHASSIS-POUR-IPHONE-X-10-NOIR-ASSEMBLE/164056211521'
             type:
               type: string
-              description: 'REPAIR_KIT or SPARE_KIT'
+              description: 'REPAIR_KIT or SPARE_PART'
               example: 'REPAIR_KIT'
         relationships:
           type: object
