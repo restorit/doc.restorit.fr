@@ -2644,11 +2644,9 @@ paths:
               Example:
                 value:
                   data:
-                    type: markets
+                    type: products
                     attributes:
-                      name: 'Ebay'
-                      url: 'http://ebay.fr/'
-                      priceXmlPath: '//*[@id="prcIsum"]'
+                      name: 'Iphone X écran'
                     relationships: {}
       security:
         - bearerAuth: []
